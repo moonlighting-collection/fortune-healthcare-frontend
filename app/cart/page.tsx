@@ -1,7 +1,7 @@
 export default function Cart() {
     return (
         <section>
-            <div className="h-screen bg-gray-100 pt-20">
+            <div className="bg-gray-100 py-24">
                 <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
                 <div className="mx-auto max-w-4xl justify-center px-6 xl:px-0">
                     <div className="rounded-lg">

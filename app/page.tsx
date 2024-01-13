@@ -10,7 +10,7 @@ export default function Home() {
   // );
 
   return (
-    <div className='px-48'>
+    <div className='xl:px-48 lg:px-24'>
       <section className="text-gray-600 body-font">
         <div className="container mx-auto flex flex-col px-5 py-6 justify-center items-center">
           <div className="w-full md:w-2/3 flex flex-col items-center text-center">
