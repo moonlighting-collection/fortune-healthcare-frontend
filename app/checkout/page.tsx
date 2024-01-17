@@ -1,10 +1,19 @@
-import React from "react";
+'use client';
+
+import {useState} from "react";
 
 export default function Checkout() {
+    const [isPopupOpen, setPopupOpen] = useState(false);
+
+    const handleSubmit = (event: any) => {
+        event.preventDefault();
+        setPopupOpen(true);
+    };
+
     return (
         <section className="container mx-auto mt-20">
             <h1 className="text-center font-bold text-blue-600 text-3xl lg:text-5xl mb-8">
-                Checkout page
+                Checkout
             </h1>
 
             <div className="flex flex-col md:flex-row justify-around px-10">
@@ -17,7 +26,7 @@ export default function Checkout() {
                                     First Name
                                 </label>
                                 <input
-                                    name="firstName /"
+                                    name="firstName"
                                     type="text"
                                     placeholder="First Name"
                                     className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -28,7 +37,7 @@ export default function Checkout() {
                                     Last Name
                                 </label>
                                 <input
-                                    name="lastName /"
+                                    name="lastName"
                                     type="text"
                                     placeholder="Last Name"
                                     className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -79,7 +88,7 @@ export default function Checkout() {
                                 rows={4} placeholder="Notes for delivery"></textarea>
                         </div>
                         <div className="mt-4">
-                            <button className="w-full px-6 py-2 text-blue-200 bg-blue-600 hover:bg-blue-900">
+                            <button onClick={event => handleSubmit(event)} className="w-full px-6 py-2 text-blue-200 bg-blue-600 hover:bg-blue-900">
                                 Process
                             </button>
                         </div>
@@ -143,6 +152,16 @@ export default function Checkout() {
                     </div>
                 </div>
             </div>
+
+            {isPopupOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
+                    <div className="bg-white p-8 rounded-md">
+                        <p className="text-xl font-bold mb-4">Submission Successful!</p>
+                        <p>Your data has been submitted successfully.</p>
+                        <button onClick={() => setPopupOpen(false)} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
+                    </div>
+                </div>
+            )}
         </section >
     );
 }
