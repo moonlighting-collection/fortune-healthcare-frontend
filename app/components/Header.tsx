@@ -19,7 +19,7 @@ const Header = () => {
 
   useEffect(() => {
     if(document.cookie[token] !== null) setState(prev => ({...prev, isLoggedIn: true}))
-  })
+  }, [])
 
   return (
     <header className="text-gray-800 body-font">
