@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGlobalState } from '../globalstatecontext';
 import {logout} from '@/app/helpers/auth'
+
+const token: any = "ftune"
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -14,6 +16,10 @@ const Header = () => {
     setState((prev) => ({...prev, isLoggedIn: false}))
     logout()
   }
+
+  useEffect(() => {
+    if(document.cookie[token] !== null) setState(prev => ({...prev, isLoggedIn: true}))
+  })
 
   return (
     <header className="text-gray-800 body-font">
