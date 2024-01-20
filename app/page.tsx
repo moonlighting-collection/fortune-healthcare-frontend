@@ -1,22 +1,30 @@
-// import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function Home() {
-  // const [searchQuery, setSearchQuery] = useState('');
+  const [products, setProducts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Assuming your products data is an array of objects with a 'name' property
-  // const filteredProducts = products.filter(product =>
-  //   product.name.toLowerCase().includes(searchQuery.toLowerCase())
-  // );
+  useEffect(() => {
+    fetch('http://localhost:5000/get')
+      .then((response) => response.json())
+      .then((data) => setProducts(data.products))
+      .catch((error) => console.error('Error fetching products:', error));
+  }, []);
+
+  const filteredProducts = products.filter((product: any) =>
+    product.productName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className='xl:px-48 lg:px-24'>
       <section className="text-gray-600 body-font">
         <div className="container mx-auto flex flex-col px-5 py-6 justify-center items-center">
-          <div className="w-full md:w-2/3 flex flex-col items-center text-center">
+          <div className="w-full md:w-3/4 flex flex-col items-center text-center">
             <h1 className="title-font sm:text-4xl text-3xl mb-4 font-medium text-gray-900">
-              Knausgaard typewriter readymade marfa
+              1StepCure: Take One Step towards health
             </h1>
             <p className="mb-8 leading-relaxed">
               Kickstarter biodiesel roof party wayfarers cold-pressed. Palo santo live-edge
@@ -24,7 +32,7 @@ export default function Home() {
               Gluten-free chia VHS squid listicle artisan.
             </p>
             <div className="flex w-full justify-center items-end">
-              <div className="relative mr-4 lg:w-full xl:w-1/2 w-2/4 md:w-full text-left">
+              <div className="relative mr-4 w-full xl:w-1/2 md:w-full text-center md:text-left">
                 <label htmlFor="hero-field" className="leading-7 text-sm text-gray-600">
                   Search Products
                 </label>
@@ -32,49 +40,28 @@ export default function Home() {
                   type="text"
                   id="hero-field"
                   name="hero-field"
-                  // value={searchQuery}
-                  // value=""
-                  // onChange={(e) => setSearchQuery(e.target.value)}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Type to search..."
                   className="w-full bg-gray-100 bg-opacity-50 rounded focus:ring-2 focus:ring-blue-200 focus:bg-transparent border border-gray-300 focus:border-blue-500 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                 />
               </div>
-              <button className="inline-flex items-center text-white bg-blue-500 border-0 py-2 px-6 focus:outline-none hover:bg-blue-600 rounded text-lg">
-                Button
-                <svg
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  className="w-4 h-4 ml-1 inline-block"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M5 12h14M12 5l7 7-7 7"></path>
-                </svg>
-              </button>
             </div>
             <p className="text-sm mt-2 text-gray-500 mb-8 w-full">
-              Neutra shabby chic ramps, viral fixie.
+              Get in touch with the experts right away!
             </p>
             <div className="flex">
               <button className="bg-gray-100 inline-flex py-3 px-5 rounded-lg items-center hover:bg-gray-200 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-6 h-6" viewBox="0 0 512 512">
-                  <path d="M99.617 8.057a50.191 50.191 0 00-38.815-6.713l230.932 230.933 74.846-74.846L99.617 8.057zM32.139 20.116c-6.441 8.563-10.148 19.077-10.148 30.199v411.358c0 11.123 3.708 21.636 10.148 30.199l235.877-235.877L32.139 20.116zM464.261 212.087l-67.266-37.637-81.544 81.544 81.548 81.548 67.273-37.64c16.117-9.03 25.738-25.442 25.738-43.908s-9.621-34.877-25.749-43.907zM291.733 279.711L60.815 510.629c3.786.891 7.639 1.371 11.492 1.371a50.275 50.275 0 0027.31-8.07l266.965-149.372-74.849-74.847z"></path>
-                </svg>
-                <span className="ml-4 flex items-start flex-col leading-none">
-                  <span className="text-xs text-gray-600 mb-1">GET IT ON</span>
-                  <span className="title-font font-medium">Google Play</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-12 h-12" viewBox="0 0 32 32"><path d=" M19.11 17.205c-.372 0-1.088 1.39-1.518 1.39a.63.63 0 0 1-.315-.1c-.802-.402-1.504-.817-2.163-1.447-.545-.516-1.146-1.29-1.46-1.963a.426.426 0 0 1-.073-.215c0-.33.99-.945.99-1.49 0-.143-.73-2.09-.832-2.335-.143-.372-.214-.487-.6-.487-.187 0-.36-.043-.53-.043-.302 0-.53.115-.746.315-.688.645-1.032 1.318-1.06 2.264v.114c-.015.99.472 1.977 1.017 2.78 1.23 1.82 2.506 3.41 4.554 4.34.616.287 2.035.888 2.722.888.817 0 2.15-.515 2.478-1.318.13-.33.244-.73.244-1.088 0-.058 0-.144-.03-.215-.1-.172-2.434-1.39-2.678-1.39zm-2.908 7.593c-1.747 0-3.48-.53-4.942-1.49L7.793 24.41l1.132-3.337a8.955 8.955 0 0 1-1.72-5.272c0-4.955 4.04-8.995 8.997-8.995S25.2 10.845 25.2 15.8c0 4.958-4.04 8.998-8.998 8.998zm0-19.798c-5.96 0-10.8 4.842-10.8 10.8 0 1.964.53 3.898 1.546 5.574L5 27.176l5.974-1.92a10.807 10.807 0 0 0 16.03-9.455c0-5.958-4.842-10.8-10.802-10.8z" fill-rule="evenodd"></path></svg>
+                <span className="ml-2 flex items-start flex-col leading-none">
+                  <span className="text-xs text-gray-600 mb-1">Ask us on</span>
+                  <span className="title-font font-medium">Whatsapp</span>
                 </span>
               </button>
               <button className="bg-gray-100 inline-flex py-3 px-5 rounded-lg items-center ml-4 hover:bg-gray-200 focus:outline-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="w-6 h-6" viewBox="0 0 305 305">
-                  <path d="M40.74 112.12c-25.79 44.74-9.4 112.65 19.12 153.82C74.09 286.52 88.5 305 108.24 305c.37 0 .74 0 1.13-.02 9.27-.37 15.97-3.23 22.45-5.99 7.27-3.1 14.8-6.3 26.6-6.3 11.22 0 18.39 3.1 25.31 6.1 6.83 2.95 13.87 6 24.26 5.81 22.23-.41 35.88-20.35 47.92-37.94a168.18 168.18 0 0021-43l.09-.28a2.5 2.5 0 00-1.33-3.06l-.18-.08c-3.92-1.6-38.26-16.84-38.62-58.36-.34-33.74 25.76-51.6 31-54.84l.24-.15a2.5 2.5 0 00.7-3.51c-18-26.37-45.62-30.34-56.73-30.82a50.04 50.04 0 00-4.95-.24c-13.06 0-25.56 4.93-35.61 8.9-6.94 2.73-12.93 5.09-17.06 5.09-4.64 0-10.67-2.4-17.65-5.16-9.33-3.7-19.9-7.9-31.1-7.9l-.79.01c-26.03.38-50.62 15.27-64.18 38.86z"></path>
-                  <path d="M212.1 0c-15.76.64-34.67 10.35-45.97 23.58-9.6 11.13-19 29.68-16.52 48.38a2.5 2.5 0 002.29 2.17c1.06.08 2.15.12 3.23.12 15.41 0 32.04-8.52 43.4-22.25 11.94-14.5 17.99-33.1 16.16-49.77A2.52 2.52 0 00212.1 0z"></path>
-                </svg>
                 <span className="ml-4 flex items-start flex-col leading-none">
-                  <span className="text-xs text-gray-600 mb-1">Download on the</span>
-                  <span className="title-font font-medium">App Store</span>
+                  <span className="text-xs text-gray-600 mb-1">Contact us</span>
+                  <span className="title-font font-medium">+1 672 2562 2526</span>
                 </span>
               </button>
             </div>
@@ -88,117 +75,77 @@ export default function Home() {
       <section className="text-gray-600 body-font">
         <div className="container px-5 py-12 mx-auto">
           <div className="flex flex-wrap -m-4">
-            <div className="p-4 md:w-1/3">
-              <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
-                <Image
-                  className="lg:h-48 md:h-36 w-full object-cover object-center"
-                  src="https://dummyimage.com/722x402"
-                  alt="blog"
-                  width={722}
-                  height={402}
-                />
-                <div className="p-6">
-                  <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">CATEGORY</h2>
-                  <h1 className="title-font text-lg font-medium text-gray-900 mb-3">The Catalyzer</h1>
-                  <p className="leading-relaxed mb-3">Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.</p>
-                  <div className="flex items-center flex-wrap ">
-                    <Link href="/product/The Catalyzer">
-                    <p className="text-blue-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
-                      <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14"></path>
-                        <path d="M12 5l7 7-7 7"></path>
-                      </svg>
-                    </p>
-                    </Link>
-                    <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>1.2K
-                    </span>
-                    <span className="text-gray-400 inline-flex items-center leading-none text-sm">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                      </svg>6
-                    </span>
+            {filteredProducts.map((product: any) => (
+              <div key={product._id} className="p-4 md:w-1/3">
+                <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
+                  <Image
+                    className="lg:h-48 md:h-36 w-full object-cover object-center"
+                    src="https://dummyimage.com/722x402"  // Replace with the actual image URL from your product object
+                    alt={product.productName}
+                    width={722}
+                    height={402}
+                  />
+                  <div className="p-6">
+                    <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
+                      {product.categoryName}
+                    </h2>
+                    <h1 className="title-font text-lg font-medium text-gray-900 mb-3">
+                      {product.productName}
+                    </h1>
+                    {/* <p className="leading-relaxed mb-3">{product.productIntro}</p>
+                    <p className="leading-relaxed mb-3">{product.benefits}</p> */}
+                    <div className="flex items-center flex-wrap">
+                      <Link href={`/product/${product.productName}`}>
+                        <p className="text-blue-500 inline-flex items-center md:mb-2 lg:mb-0">
+                          Learn More
+                          <svg
+                            className="w-4 h-4 ml-2"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5l7 7-7 7"></path>
+                          </svg>
+                        </p>
+                      </Link>
+                      {/* <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        15
+                      </span>
+                      <span className="text-gray-400 inline-flex items-center leading-none text-sm">
+                        <svg
+                          className="w-4 h-4 mr-1"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
+                        </svg>
+                        12
+                      </span> */}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="p-4 md:w-1/3">
-              <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
-                <Image
-                  className="lg:h-48 md:h-36 w-full object-cover object-center"
-                  src="https://dummyimage.com/722x402"
-                  alt="blog"
-                  width={722}
-                  height={402}
-                />
-                <div className="p-6">
-                  <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">CATEGORY</h2>
-                  <h1 className="title-font text-lg font-medium text-gray-900 mb-3">The 400 Blows</h1>
-                  <p className="leading-relaxed mb-3">Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.</p>
-                  <div className="flex items-center flex-wrap">
-                  <Link href="/product/400 Blows">
-                    <p className="text-blue-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
-                      <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14"></path>
-                        <path d="M12 5l7 7-7 7"></path>
-                      </svg>
-                    </p>
-                    </Link>
-                    <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>1.2K
-                    </span>
-                    <span className="text-gray-400 inline-flex items-center leading-none text-sm">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                      </svg>6
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 md:w-1/3">
-              <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
-                <Image
-                  className="lg:h-48 md:h-36 w-full object-cover object-center"
-                  src="https://dummyimage.com/722x402"
-                  alt="blog"
-                  width={722}
-                  height={402}
-                />
-                <div className="p-6">
-                  <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">CATEGORY</h2>
-                  <h1 className="title-font text-lg font-medium text-gray-900 mb-3">Shooting Stars</h1>
-                  <p className="leading-relaxed mb-3">Photo booth fam kinfolk cold-pressed sriracha leggings jianbing microdosing tousled waistcoat.</p>
-                  <div className="flex items-center flex-wrap ">
-                  <Link href="/product/Shooting Stars">
-                    <p className="text-blue-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
-                      <svg className="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M5 12h14"></path>
-                        <path d="M12 5l7 7-7 7"></path>
-                      </svg>
-                    </p>
-                    </Link>
-                    <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                        <circle cx="12" cy="12" r="3"></circle>
-                      </svg>1.2K
-                    </span>
-                    <span className="text-gray-400 inline-flex items-center leading-none text-sm">
-                      <svg className="w-4 h-4 mr-1" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                        <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                      </svg>6
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
