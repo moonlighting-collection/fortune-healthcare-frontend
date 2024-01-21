@@ -3,43 +3,90 @@
 import Image from "next/image"
 import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation'
+import { redirectUser } from "@/app/auth/authHelper";
+import { useGlobalState } from "@/app/globalstatecontext";
 
 
 export default function Product({ params }: any) {
 
 
     const [cart, setCart] = useState(Object);
+    const { state } = useGlobalState()
     const [productData, setProductData] = useState<any>(null);
     const searchParams = useSearchParams()
 
-    const handleAddToCart = (pqid: any) => {
+    const handleAddToCart = (productQuantityId: any) => {
+        if (!state.isLoggedIn) return redirectUser('/auth/login');
+
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
-            if (newCart[pqid]) {
-                newCart[pqid]++;
+
+            if (newCart[productQuantityId]) {
+                newCart[productQuantityId]++;
             } else {
-                newCart[pqid] = 1;
+                newCart[productQuantityId] = 1;
             }
-            return newCart;
+
+            (async () => {
+                const data = await updateCartBackend(newCart);
+                if (data) {
+                    setCart(newCart);
+                }
+            })();
+            return prevCart;
         });
     };
 
-    const handleRemoveFromCart = (pqid: any) => {
+
+    const handleRemoveFromCart = (productQuantityId: any) => {
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
-            if (newCart[pqid] > 1) {
-                newCart[pqid]--;
+
+            if (newCart[productQuantityId] > 1) {
+                newCart[productQuantityId]--;
             } else {
-                delete newCart[pqid];
+                delete newCart[productQuantityId];
             }
-            return newCart;
+
+            (async () => {
+                const data = await updateCartBackend(newCart);
+                if (data) {
+                    setCart(newCart);
+                }
+            })();
+            return prevCart;
         });
     };
 
 
-    const addToCart = (size: any) => {
-        // Implement your add to cart logic here
-        console.log(`Added ${size} to cart`);
+
+    const updateCartBackend = async (updatedCart: any) => {
+        try {
+            const response = await fetch("http://localhost:5000/collection/cart", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    cartDetails: Object.entries(updatedCart).map(([product_id, count]: any) => ({
+                        product_id,
+                        count,
+                    })),
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const updatedData = await response.json();
+            console.log("Cart updated successfully:", updatedData);
+            return updatedData;
+        } catch (error) {
+            console.error("Error updating cart:", error);
+            return null;
+        }
     };
 
 
@@ -69,18 +116,18 @@ export default function Product({ params }: any) {
                             <Image
                                 className="w-full h-full object-cover object-center"
                                 src="https://dummyimage.com/400x400"
-                                // src={productData.image} // Replace with the actual property from your API response
-                                alt={productData.productName} // Replace with the actual property from your API response
+                                // src={productData.image}
+                                alt={productData.productName}
                                 width={400}
                                 height={400}
                             />
                         </div>
                         <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                             <h2 className="text-sm title-font text-gray-500 tracking-widest">
-                                {productData.categoryName} {/* Replace with the actual property from your API response */}
+                                {productData.categoryName}
                             </h2>
                             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
-                                {productData.productName} {/* Replace with the actual property from your API response */}
+                                {productData.productName}
                             </h1>
                             <div className="flex mb-4">
                                 <span className="flex items-center">
