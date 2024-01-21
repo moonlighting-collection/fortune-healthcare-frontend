@@ -3,9 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../globalstatecontext';
-import {logout} from '@/app/helpers/auth'
-
-const token: any = "ftune"
+import { checkAuthentication, logout } from '@/app/helpers/auth'
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -13,12 +11,15 @@ const Header = () => {
 
   const handleDropdownClick = () => setIsDropdownOpen(currState => !currState)
   const handleLogout = () => {
-    setState((prev) => ({...prev, isLoggedIn: false}))
+    setState((prev) => ({ ...prev, isLoggedIn: false }))
     logout()
   }
 
   useEffect(() => {
-    if(document.cookie[token] !== null) setState(prev => ({...prev, isLoggedIn: true}))
+    checkAuthentication().then((res) => {
+      if (res) setState(prev => ({ ...prev, isLoggedIn: true }))
+      else setState(prev => ({ ...prev, isLoggedIn: false }))
+    })
   }, [])
 
   return (
@@ -63,10 +64,10 @@ const Header = () => {
               </div>
             </div> */}
             <ul className="h-48 py-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200">
-              <Link href="/category/Bonnie Green">
+              <Link href="/category/COVID MEDS">
                 <li onClick={handleDropdownClick}>
                   <div className="flex items-center ps-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                    <label className="w-full py-2 ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Bonnie Green</label>
+                    <label className="w-full py-2 ms-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">COVID MEDS</label>
                   </div>
                 </li>
               </Link>
@@ -121,22 +122,22 @@ const Header = () => {
           state.isLoggedIn ?
             <><Link href='/cart'>
               <button className="inline-flex items-center bg-gray-100 border-0 px-5 py-2.5 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
-              My Cart
-            </button></Link>
-            <button onClick={handleLogout} className="inline-flex items-center bg-gray-100 border-0 px-5 py-2.5 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
-              Logout
-              <svg
-                fill="none"
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                className="w-4 h-4 ml-1"
-                viewBox="0 0 24 24"
-              >
-                <path d="M5 12h14M12 5l7 7-7 7"></path>
-              </svg>
-            </button></> :
+                My Cart
+              </button></Link>
+              <button onClick={handleLogout} className="inline-flex items-center bg-gray-100 border-0 px-5 py-2.5 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
+                Logout
+                <svg
+                  fill="none"
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  className="w-4 h-4 ml-1"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+              </button></> :
             <Link href="/auth/login">
               <button className="inline-flex items-center bg-gray-100 border-0 px-5 py-2.5 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
                 Login

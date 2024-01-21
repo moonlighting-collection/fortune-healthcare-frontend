@@ -1,15 +1,16 @@
-import { parseCookies, destroyCookie } from 'nookies';
+'use server'
+
 import { redirectUser } from '../auth/authHelper';
+import { cookies } from 'next/headers';
 
 const TOKEN_NAME = 'ftune';
 
 export const logout = () => {
-  destroyCookie(null, TOKEN_NAME);
+  cookies().delete(TOKEN_NAME)
   redirectUser("/auth/login")
   return true;
 };
 
-export const checkAuthentication = () => {
-  const cookies = parseCookies();
-  return !!cookies[TOKEN_NAME];
+export const checkAuthentication = async () => {
+  return !!cookies().get(TOKEN_NAME);
 };
