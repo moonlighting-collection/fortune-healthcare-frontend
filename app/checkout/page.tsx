@@ -1,14 +1,103 @@
 'use client';
 
-import {useState} from "react";
+import { useState, useEffect } from 'react';
 
 export default function Checkout() {
     const [isPopupOpen, setPopupOpen] = useState(false);
+    const [sameAsShipping, setSameAsShipping] = useState(true);
+    const [orderSummary, setOrderSummary] = useState<any>(null);
 
-    const handleSubmit = (event: any) => {
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        address: '',
+        billingAddress: '',
+        city: '',
+        postcode: '',
+        note: '',
+    });
+
+    const handleSubmit = async (event: any) => {
         event.preventDefault();
-        setPopupOpen(true);
+
+        try {
+            // Simulate form submission
+            // Replace this with actual API call
+            const response = await fetch('/api/submitOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (response.ok) {
+                // Simulate fetching order summary
+                // Replace this with actual API call
+                const orderSummaryResponse = await fetch('/api/getOrderSummary');
+                if (orderSummaryResponse.ok) {
+                    const summaryData = await orderSummaryResponse.json();
+                    setOrderSummary(summaryData);
+                }
+
+                setPopupOpen(true);
+            } else {
+                console.error('Error submitting the form');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
+
+    const handleCheckboxChange = () => {
+        setSameAsShipping(!sameAsShipping);
+    };
+
+    const handleInputChange = (e: any) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    useEffect(() => {
+        // Fetch initial order summary when the component mounts
+        const fetchInitialOrderSummary = async () => {
+            // try {
+            // Simulate fetching order summary
+            // Replace this with actual API call
+            // const orderSummaryResponse = await fetch('/api/getOrderSummary');
+            // if (orderSummaryResponse.ok) {
+            //     const summaryData = await orderSummaryResponse.json();
+            setOrderSummary({
+                items: [
+                    {
+                        title: 'Product 1',
+                        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+                        imageUrl: 'https://example.com/product1.jpg',
+                        price: 25.99,
+                    },
+                    {
+                        title: 'Product 2',
+                        description: 'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.',
+                        imageUrl: 'https://example.com/product2.jpg',
+                        price: 19.99,
+                    },
+                ],
+                subtotal: 45.98,
+                shippingTax: 5.00,
+                total: 50.98,
+            });
+            // }
+            // } catch (error) {
+            //     console.error('Error fetching order summary:', error);
+            // }
+        };
+
+        fetchInitialOrderSummary();
+    }, []); // Run this effect only once when the component mounts
 
     return (
         <section className="container mx-auto mt-20">
@@ -19,7 +108,7 @@ export default function Checkout() {
             <div className="flex flex-col md:flex-row justify-around px-10">
                 <div className="w-full md:w-1/2 mb-8">
                     <h2 className="font-bold text-xl mb-4 text-center">Shipping Details</h2>
-                    <form className="w-full">
+                    <form className="w-full" onSubmit={handleSubmit}>
                         <div className="flex flex-col md:flex-row md:justify-between gap-2 mb-6">
                             <div className="w-full">
                                 <label htmlFor="firstName" className="block text-sm font-semibold text-gray-500">
@@ -30,6 +119,7 @@ export default function Checkout() {
                                     type="text"
                                     placeholder="First Name"
                                     className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleInputChange}
                                 />
                             </div>
                             <div className="w-full">
@@ -41,116 +131,126 @@ export default function Checkout() {
                                     type="text"
                                     placeholder="Last Name"
                                     className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleInputChange}
                                 />
                             </div>
                         </div>
                         <div className="mt-4">
                             <div className="w-full">
-                                <label htmlFor="Email"
-                                    className="block mb-3 text-sm font-semibold text-gray-500">Email</label>
-                                <input name="Last Name" type="text" placeholder="Email"
-                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600" />
+                                <label htmlFor="Email" className="block mb-3 text-sm font-semibold text-gray-500">Email</label>
+                                <input
+                                    name="email"
+                                    type="text"
+                                    placeholder="Email"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleInputChange}
+                                />
                             </div>
                         </div>
                         <div className="mt-4">
                             <div className="w-full">
-                                <label htmlFor="Address"
-                                    className="block mb-3 text-sm font-semibold text-gray-500">Address</label>
+                                <label htmlFor="Address" className="block mb-3 text-sm font-semibold text-gray-500">Shipping Address</label>
                                 <textarea
                                     className="w-full px-4 py-3 text-xs border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                    name="Address" cols={20} rows={4} placeholder="Address"></textarea>
+                                    name="address"
+                                    cols={20}
+                                    rows={4}
+                                    placeholder="Address"
+                                    value={formData.address}
+                                    onChange={handleInputChange}
+                                ></textarea>
                             </div>
                         </div>
-                        <div className="space-x-0 lg:flex lg:space-x-4">
-                            <div className="w-full lg:w-1/2">
-                                <label htmlFor="city"
-                                    className="block mb-3 text-sm font-semibold text-gray-500">City</label>
-                                <input name="city" type="text" placeholder="City"
-                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600" />
+                        {!sameAsShipping &&
+                            <div className="mt-4">
+                                <div className="w-full">
+                                    <label htmlFor="Address" className="block mb-3 text-sm font-semibold text-gray-500">Billing Address</label>
+                                    <textarea
+                                        className="w-full px-4 py-3 text-xs border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                        name="billingAddress"
+                                        cols={20}
+                                        rows={4}
+                                        placeholder="Billing Address"
+                                        value={formData.billingAddress}
+                                        onChange={handleInputChange}
+                                    ></textarea>
+                                </div>
                             </div>
-                            <div className="w-full lg:w-1/2 ">
-                                <label htmlFor="postcode" className="block mb-3 text-sm font-semibold text-gray-500">
-                                    Postcode</label>
-                                <input name="postcode" type="text" placeholder="Post Code"
-                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600" />
-                            </div>
-                        </div>
+                        }
                         <div className="flex items-center mt-4">
                             <label className="flex items-center text-sm group text-heading">
-                                <input type="checkbox"
-                                    className="w-5 h-5 border border-gray-300 rounded focus:outline-none focus:ring-1" />
-                                <span className="ml-2">Save this information for next time</span></label>
+                                <input
+                                    type="checkbox"
+                                    checked={sameAsShipping}
+                                    onChange={handleCheckboxChange}
+                                    className="w-5 h-5 border border-gray-300 rounded focus:outline-none focus:ring-1"
+                                />
+                                <span className="ml-2">Billing address same as shipping address</span>
+                            </label>
                         </div>
-                        <div className="relative pt-3 xl:pt-6"><label htmlFor="note"
-                            className="block mb-3 text-sm font-semibold text-gray-500"> Notes
-                            (Optional)</label><textarea name="note"
+                        <div className="relative pt-3 xl:pt-6">
+                            <label htmlFor="note" className="block mb-3 text-sm font-semibold text-gray-500"> Notes (Optional)</label>
+                            <textarea
+                                name="note"
                                 className="flex items-center w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
-                                rows={4} placeholder="Notes for delivery"></textarea>
+                                rows={4}
+                                placeholder="Notes for delivery"
+                                value={formData.note}
+                                onChange={handleInputChange}
+                            ></textarea>
                         </div>
                         <div className="mt-4">
-                            <button onClick={event => handleSubmit(event)} className="w-full px-6 py-2 text-blue-200 bg-blue-600 hover:bg-blue-900">
+                            <button
+                                type="submit"
+                                className="w-full px-6 py-2 text-blue-200 bg-blue-600 hover:bg-blue-900"
+                            >
                                 Process
                             </button>
                         </div>
                     </form>
                 </div>
-                <div className="md:w-1/3">
-                    <div className="pt-12 md:pt-0 2xl:ps-4 flex flex-col items-center">
-                        <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-                        <div className="mt-8">
-                            <div className="flex flex-col space-y-4">
-                                <div className="flex space-x-4">
-                                    <div>
-                                        <img src="https://source.unsplash.com/user/erondu/1600x900" alt="image"
-                                            className="w-60" />
+                {orderSummary && (
+                    <div className="md:w-1/3">
+                        <div className="pt-12 md:pt-0 2xl:ps-4 flex flex-col items-center p-6 rounded-md">
+                            <h2 className="text-xl font-bold mb-4 text-blue-600">Order Summary</h2>
+                            <div className="mt-8 flex flex-col gap-4">
+                                {orderSummary.items.map((item: any, index: any) => (
+                                    <div key={index} className="flex space-x-4 border-b pb-4">
+                                        <div>
+                                            <img src={item.imageUrl} alt={`Product ${index + 1}`} className="w-20 h-20 object-cover rounded-md" />
+                                        </div>
+                                        <div className="flex-1">
+                                            <h2 className="text-lg font-semibold">{item.title}</h2>
+                                            <p className="text-sm text-gray-500">{item.description}</p>
+                                            <div className="flex items-center mt-2">
+                                                <span className="text-red-600 font-semibold">Price</span>
+                                                <span className="ml-2">${item.price.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold">Title</h2>
-                                        <p className="text-sm">Lorem ipsum dolor sit amet, tet</p>
-                                        <span className="text-red-600">Price</span> $20
-                                    </div>
-                                    <div>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div className="flex space-x-4">
-                                    <div>
-                                        <img src="https://source.unsplash.com/collection/190727/1600x900" alt="image"
-                                            className="w-60" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-xl font-bold">Title</h2>
-                                        <p className="text-sm">Lorem ipsum dolor sit amet, tet</p>
-                                        <span className="text-red-600">Price</span> $20
-                                    </div>
-                                    <div>
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                                d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </div>
-                                </div>
+                                ))}
+                            </div>
+                            <div className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
+                                <span className="text-gray-600">Subtotal</span>
+                                <span className="ml-auto font-bold">${orderSummary.subtotal.toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
+                                <span className="text-gray-600">Shipping Tax</span>
+                                <span className="ml-auto font-bold">${orderSummary.shippingTax.toFixed(2)}</span>
+                            </div>
+                            <div className="flex items-center w-full py-4 font-semibold text-xl border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
+                                <span className="text-gray-600">Total</span>
+                                <span className="ml-auto font-bold text-blue-600">${orderSummary.total.toFixed(2)}</span>
                             </div>
                         </div>
-                        <div className="flex p-4 mt-4">
-                            <h2 className="text-xl font-bold">ITEMS 2</h2>
-                        </div>
-                        <div
-                            className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
-                            Subtotal<span className="ml-2">$40.00</span></div>
-                        <div
-                            className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
-                            Shipping Tax<span className="ml-2">$10</span></div>
-                        <div
-                            className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
-                            Total<span className="ml-2">$50.00</span></div>
                     </div>
-                </div>
+                )}
+
             </div>
 
             {isPopupOpen && (
@@ -162,6 +262,6 @@ export default function Checkout() {
                     </div>
                 </div>
             )}
-        </section >
+        </section>
     );
 }
