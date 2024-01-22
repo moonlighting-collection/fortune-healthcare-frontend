@@ -1,37 +1,38 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 export default function Cart() {
-    const [cart, setCart] = useState([
-        {
-            id: 1,
-            name: 'Nike Air Max 2019',
-            packs: [
-                { size: '36EU - 4US', quantity: 2, price: 259 },
-                { size: '36EU - 6US', quantity: 4, price: 789 }
-            ]
-        },
-        {
-            id: 2,
-            name: 'Adidas Superstar',
-            packs: [
-                { size: '38EU - 6US', quantity: 3, price: 329 },
-                { size: '38EU - 8US', quantity: 2, price: 459 }
-            ]
-        }
-    ]);
+  const [cart, setCart] = useState([
+    {
+      id: 1,
+      name: 'Nike Air Max 2019',
+      packs: [
+        { size: '36EU - 4US', quantity: 2, price: 259 },
+        { size: '36EU - 6US', quantity: 4, price: 789 }
+      ]
+    },
+    {
+      id: 2,
+      name: 'Adidas Superstar',
+      packs: [
+        { size: '38EU - 6US', quantity: 3, price: 329 },
+        { size: '38EU - 8US', quantity: 2, price: 459 }
+      ]
+    }
+  ]);
 
   const handleQuantityChange = (productId: any, packIndex: any, newQuantity: any) => {
     setCart((prevCart: any) =>
       prevCart.map((item: any) =>
         item.id === productId
           ? {
-              ...item,
-              packs: item.packs.map((pack: any, index: any) =>
-                index === packIndex ? { ...pack, quantity: newQuantity } : pack
-              ),
-            }
+            ...item,
+            packs: item.packs.map((pack: any, index: any) =>
+              index === packIndex ? { ...pack, quantity: newQuantity } : pack
+            ),
+          }
           : item
       )
     );
@@ -43,9 +44,9 @@ export default function Cart() {
         .map((item: any) =>
           item.id === productId
             ? {
-                ...item,
-                packs: item.packs.filter((_pack: any, index: any) => index !== packIndex),
-              }
+              ...item,
+              packs: item.packs.filter((_pack: any, index: any) => index !== packIndex),
+            }
             : item
         )
         .filter((item: any) => item.packs.length > 0) // Remove product if no packs remaining
@@ -57,11 +58,11 @@ export default function Cart() {
       prevCart.map((item: any) =>
         item.id === productId
           ? {
-              ...item,
-              packs: item.packs.map((pack: any, index: any) =>
-                index === packIndex ? { ...pack, quantity: 1 } : pack
-              ),
-            }
+            ...item,
+            packs: item.packs.map((pack: any, index: any) =>
+              index === packIndex ? { ...pack, quantity: 1 } : pack
+            ),
+          }
           : item
       )
     );
@@ -203,11 +204,11 @@ export default function Cart() {
               >
                 Empty Cart
               </button>
-              <button
-                className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-white hover:bg-blue-600"
+              <Link href='/checkout'
+                className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-center text-white hover:bg-blue-600"
               >
                 Check out
-              </button>
+              </Link>
             </div>
           </div>
         </div>
