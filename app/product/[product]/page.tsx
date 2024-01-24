@@ -9,85 +9,108 @@ import { useGlobalState } from "@/app/globalstatecontext";
 
 export default function Product({ params }: any) {
 
-
-    const [cart, setCart] = useState(Object);
-    const { state } = useGlobalState()
+    const [cart, setCart] = useState<any>({});
+    const { state } = useGlobalState();
     const [productData, setProductData] = useState<any>(null);
-    const searchParams = useSearchParams()
+    const searchParams = useSearchParams();
+    const [cartLoaded, setCartLoaded] = useState(false);
 
-    const handleAddToCart = (productQuantityId: any) => {
+    const handleAddToCart = (quantity: any) => {
         if (!state.isLoggedIn) return redirectUser('/auth/login');
 
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
 
-            if (newCart[productQuantityId]) {
-                newCart[productQuantityId]++;
+            if (newCart[quantity]) {
+                newCart[quantity]++;
             } else {
-                newCart[productQuantityId] = 1;
+                newCart[quantity] = 1;
             }
 
-            (async () => {
-                const data = await updateCartBackend(newCart);
-                if (data) {
-                    setCart(newCart);
-                }
-            })();
-            return prevCart;
+            return newCart;
         });
     };
 
-
-    const handleRemoveFromCart = (productQuantityId: any) => {
+    const handleRemoveFromCart = (quantity: any) => {
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
 
-            if (newCart[productQuantityId] > 1) {
-                newCart[productQuantityId]--;
+            if (newCart[quantity] > 1) {
+                newCart[quantity]--;
             } else {
-                delete newCart[productQuantityId];
+                delete newCart[quantity];
             }
 
-            (async () => {
-                const data = await updateCartBackend(newCart);
-                if (data) {
-                    setCart(newCart);
-                }
-            })();
-            return prevCart;
+            return newCart;
         });
     };
 
+    useEffect(() => {
+        const fetchCartStatus = async () => {
+            try {
+                const response = await fetch("http://localhost:5000/cart", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include',
+                });
 
-
-    const updateCartBackend = async (updatedCart: any) => {
-        try {
-            const response = await fetch("http://localhost:5000/cart", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    cartDetails: Object.entries(updatedCart).map(([product_id, count]: any) => ({
-                        product_id,
-                        count,
-                    })),
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                if (response.ok) {
+                    const cartData = await response.json();
+                    const newCart = cartData.reduce((acc: any, item: any) => {
+                        item.totalQty.forEach((qtyItem: any) => {
+                            const quantity = qtyItem.quantity;
+                            const count = qtyItem.count;
+                            acc[quantity] = count;
+                        });
+                        return acc;
+                    }, {});
+                    setCart(newCart);
+                    setCartLoaded(true); // Set cartLoaded to true after receiving data
+                }
+            } catch (error) {
+                console.error("Error fetching cart status:", error);
             }
+        };
 
-            const updatedData = await response.json();
-            console.log("Cart updated successfully:", updatedData);
-            return updatedData;
-        } catch (error) {
-            console.error("Error updating cart:", error);
-            return null;
-        }
-    };
+        fetchCartStatus();
+    }, []);
+
+
+    useEffect(() => {
+        const updateBackend = async () => {
+            try {
+                const cartDetails = [{
+                    product_id: searchParams.get('product'),
+                    totalQty: Object.keys(cart).map((qty: any) => ({
+                        quantity: qty,
+                        count: cart[qty]
+                    }))
+                }];
+
+                const response = await fetch("http://localhost:5000/cart", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ cartDetails }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const updatedData = await response.json();
+                console.log("Cart updated successfully:", updatedData);
+            } catch (error) {
+                console.error("Error updating cart:", error);
+            }
+        };
+
+        updateBackend();
+    }, [cart]);
 
 
     useEffect(() => {
@@ -105,9 +128,7 @@ export default function Product({ params }: any) {
     }, [params.productId]);
 
 
-
     return (
-
         <section className="text-gray-600 body-font overflow-hidden">
             <div className="container px-5 py-24 mx-auto">
                 {productData ? (
@@ -170,53 +191,59 @@ export default function Product({ params }: any) {
                             <p className="leading-relaxed text-justify">{productData.productIntro}</p><br />
                             <h3>Benefits:</h3>
                             <p className="leading-relaxed text-justify">{productData.benefits}</p>
-
                             <div className="overflow-x-auto py-10">
-                                <table className="w-full border-collapse">
-                                    <thead>
+                                {cartLoaded && (
+                                    <table className="w-full border-collapse">
+                                        <thead>
                                         <tr className="bg-gray-100">
                                             <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Quantity</th>
                                             <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Price</th>
                                             <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Action</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {productData.price.map(({ quantity, cost, _id }: any) => (
-                                            <tr key={_id} className="hover:bg-gray-50 border">
-                                                <td className="py-3 px-4 border text-center">{quantity}</td>
-                                                <td className="py-3 px-4 border text-center">${cost.toFixed(2)}</td>
-                                                <td className="py-3 px-4 border text-center">
-                                                    {cart[_id] ? (
-                                                        <>
+                                        <tbody>
+                                        {productData.price.map(({ quantity, cost, _id }: any) => {
+                                            const cartCount = cart[quantity] || 0;
+                                            console.log(cart[quantity], cart, quantity)
+
+                                            return (
+                                                <tr key={_id} className="hover:bg-gray-50 border">
+                                                    <td className="py-3 px-4 border text-center">{quantity}</td>
+                                                    <td className="py-3 px-4 border text-center">${cost.toFixed(2)}</td>
+                                                    <td className="py-3 px-4 border text-center">
+                                                        {cartCount > 0 ? (
+                                                            <>
+                                                                <button
+                                                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l"
+                                                                    onClick={() => handleRemoveFromCart(quantity)}
+                                                                >
+                                                                    -
+                                                                </button>
+                                                                <button className="bg-gray-300 text-gray-700 font-bold py-2 px-4">
+                                                                    {cartCount}
+                                                                </button>
+                                                                <button
+                                                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
+                                                                    onClick={() => handleAddToCart(quantity)}
+                                                                >
+                                                                    +
+                                                                </button>
+                                                            </>
+                                                        ) : (
                                                             <button
-                                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l"
-                                                                onClick={() => handleRemoveFromCart(_id)}
+                                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                                                onClick={() => handleAddToCart(quantity)}
                                                             >
-                                                                -
+                                                                Add to Cart
                                                             </button>
-                                                            <button className="bg-gray-300 text-gray-700 font-bold py-2 px-4">
-                                                                {cart[_id]}
-                                                            </button>
-                                                            <button
-                                                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
-                                                                onClick={() => handleAddToCart(_id)}
-                                                            >
-                                                                +
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <button
-                                                            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                                                            onClick={() => handleAddToCart(_id)}
-                                                        >
-                                                            Add to Cart
-                                                        </button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         </div>
                     </div>
