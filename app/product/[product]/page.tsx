@@ -62,7 +62,7 @@ export default function Product({ params }: any) {
 
     const updateCartBackend = async (updatedCart: any) => {
         try {
-            const response = await fetch("http://localhost:5000/collection/cart", {
+            const response = await fetch("http://localhost:5000/cart", {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export default function Product({ params }: any) {
     useEffect(() => {
         const fetchProductData = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/collection/get?product=${searchParams.get('product')}`);
+                const response = await fetch(`http://localhost:5000/product?product=${searchParams.get('product')}`);
                 const data = await response.json();
                 setProductData(data.products[0]);
             } catch (error) {

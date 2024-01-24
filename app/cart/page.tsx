@@ -86,7 +86,7 @@ export default function Cart() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const shippingCost = 4.99; // Assuming a fixed shipping cost
+    const shippingCost = 25; // Assuming a fixed shipping cost
     return subtotal + shippingCost;
   };
 
@@ -186,8 +186,8 @@ export default function Cart() {
               <p className="text-gray-700">${calculateSubtotal().toFixed(2)}</p>
             </div>
             <div className="flex justify-between">
-              <p className="text-gray-700">Shipping</p>
-              <p className="text-gray-700">$4.99</p>
+              <p className="text-gray-700">Flat Shipping Charge</p>
+              <p className="text-gray-700">$25</p>
             </div>
             <hr className="my-4" />
             <div className="flex justify-between">

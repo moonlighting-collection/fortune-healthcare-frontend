@@ -7,6 +7,12 @@ export default function Checkout() {
     const [sameAsShipping, setSameAsShipping] = useState(true);
     const [orderSummary, setOrderSummary] = useState<any>(null);
 
+    const [creditCardData, setCreditCardData] = useState({
+        cardNumber: '',
+        cardExpiry: '',
+        cardCvv: '',
+    });
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -16,38 +22,84 @@ export default function Checkout() {
         city: '',
         postcode: '',
         note: '',
+        creditCardDetails: {
+            cardNumber: '',
+            cardExpiry: '',
+            cardCvv: '',
+        }
     });
+
+    const handleCreditCardChange = (e: any) => {
+        const { name, value } = e.target;
+        setCreditCardData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleFeedbackSubmit = (event: any) => {
+        event.preventDefault();
+
+        // Assuming you have a separate API endpoint for submitting new feedback
+        const apiUrl = "https://your-backend-api/new-feedback";
+
+        // Create a feedback object with the input data
+        const newFeedbackData = {
+            feedback: event.target.newFeedback.value,
+            // Add other relevant data if needed
+        };
+
+        // Send the new feedback data to the backend
+        fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(newFeedbackData),
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log("New Feedback submitted successfully:", data);
+                // You can handle the response from the backend if needed
+            })
+            .catch(error => {
+                console.error("Error submitting new feedback:", error);
+                // Handle errors if needed
+            });
+        setPopupOpen(false)
+    };
+
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
 
-        try {
-            // Simulate form submission
-            // Replace this with actual API call
-            const response = await fetch('/api/submitOrder', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
+        formData.creditCardDetails = creditCardData
 
-            if (response.ok) {
-                // Simulate fetching order summary
-                // Replace this with actual API call
-                const orderSummaryResponse = await fetch('/api/getOrderSummary');
-                if (orderSummaryResponse.ok) {
-                    const summaryData = await orderSummaryResponse.json();
-                    setOrderSummary(summaryData);
-                }
+        // try {
+        // const response = await fetch('/api/submitOrder', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify(formData),
+        // });
 
-                setPopupOpen(true);
-            } else {
-                console.error('Error submitting the form');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        // if (response.ok) {
+        //     // Simulate fetching order summary
+        //     // Replace this with actual API call
+        //     const orderSummaryResponse = await fetch('/api/getOrderSummary');
+        //     if (orderSummaryResponse.ok) {
+        //         const summaryData = await orderSummaryResponse.json();
+        //         setOrderSummary(summaryData);
+        //     }
+
+        setPopupOpen(true);
+        //     } else {
+        //         console.error('Error submitting the form');
+        //     }
+        // } catch (error) {
+        //     console.error('Error:', error);
+        // }
     };
 
     const handleCheckboxChange = () => {
@@ -87,7 +139,7 @@ export default function Checkout() {
                     },
                 ],
                 subtotal: 45.98,
-                shippingTax: 5.00,
+                shippingTax: 25.00,
                 total: 50.98,
             });
             // }
@@ -105,7 +157,7 @@ export default function Checkout() {
                 Checkout
             </h1>
 
-            <div className="flex flex-col md:flex-row justify-around px-10">
+            <div className="flex flex-col md:flex-row md:items-center justify-around px-10">
                 <div className="w-full md:w-1/2 mb-8">
                     <h2 className="font-bold text-xl mb-4 text-center">Shipping Details</h2>
                     <form className="w-full" onSubmit={handleSubmit}>
@@ -188,6 +240,44 @@ export default function Checkout() {
                                 <span className="ml-2">Billing address same as shipping address</span>
                             </label>
                         </div>
+                        <div className="flex flex-col md:flex-row md:justify-between gap-2 mt-6">
+                            <div className="w-full">
+                                <label htmlFor="cardNumber" className="block text-sm font-semibold text-gray-500">
+                                    Credit Card Number
+                                </label>
+                                <input
+                                    name="cardNumber"
+                                    type="text"
+                                    placeholder="Credit Card Number"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleCreditCardChange}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="cardExpiry" className="block text-sm font-semibold text-gray-500">
+                                    Expiration Date
+                                </label>
+                                <input
+                                    name="cardExpiry"
+                                    type="text"
+                                    placeholder="MM/YYYY"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleCreditCardChange}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="cardCvv" className="block text-sm font-semibold text-gray-500">
+                                    CVV
+                                </label>
+                                <input
+                                    name="cardCvv"
+                                    type="text"
+                                    placeholder="CVV"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleCreditCardChange}
+                                />
+                            </div>
+                        </div>
                         <div className="relative pt-3 xl:pt-6">
                             <label htmlFor="note" className="block mb-3 text-sm font-semibold text-gray-500"> Notes (Optional)</label>
                             <textarea
@@ -210,9 +300,9 @@ export default function Checkout() {
                     </form>
                 </div>
                 {orderSummary && (
-                    <div className="md:w-1/3">
-                        <div className="pt-12 md:pt-0 2xl:ps-4 flex flex-col items-center p-6 rounded-md">
-                            <h2 className="text-xl font-bold mb-4 text-blue-600">Order Summary</h2>
+                    <div className="md:w-1/3 ">
+                        <div className="pt-12 md:p-6 2xl:ps-4 flex flex-col items-center p-6 rounded-lg border-2 border-gray-200">
+                            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
                             <div className="mt-8 flex flex-col gap-4">
                                 {orderSummary.items.map((item: any, index: any) => (
                                     <div key={index} className="flex space-x-4 border-b pb-4">
@@ -240,25 +330,37 @@ export default function Checkout() {
                                 <span className="ml-auto font-bold">${orderSummary.subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex items-center w-full py-4 text-sm font-semibold border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
-                                <span className="text-gray-600">Shipping Tax</span>
+                                <span className="text-gray-600">Flat Shipping Charge</span>
                                 <span className="ml-auto font-bold">${orderSummary.shippingTax.toFixed(2)}</span>
                             </div>
                             <div className="flex items-center w-full py-4 font-semibold text-xl border-b border-gray-300 lg:py-5 lg:px-3 text-heading last:border-b-0 last:text-base last:pb-0">
                                 <span className="text-gray-600">Total</span>
                                 <span className="ml-auto font-bold text-blue-600">${orderSummary.total.toFixed(2)}</span>
                             </div>
+                            <p>*Your card will be charged by 1StepCure for above amount</p>
                         </div>
                     </div>
                 )}
-
             </div>
-
             {isPopupOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
                     <div className="bg-white p-8 rounded-md">
                         <p className="text-xl font-bold mb-4">Submission Successful!</p>
                         <p>Your data has been submitted successfully.</p>
-                        <button onClick={() => setPopupOpen(false)} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
+                        <form onSubmit={handleFeedbackSubmit}>
+                            <label htmlFor="newFeedback" className="block mb-3 text-sm font-semibold text-gray-500">New Feedback</label>
+                            <textarea
+                                name="newFeedback"
+                                className="flex items-center w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                rows={4}
+                                placeholder="Provide your new feedback here"
+                            ></textarea>
+                            <div className='flex justify-between'>
+                                <button type="submit" className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Submit New Feedback</button>
+                                <button onClick={() => setPopupOpen(false)} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
+                            </div>
+                        </form>
+
                     </div>
                 </div>
             )}
