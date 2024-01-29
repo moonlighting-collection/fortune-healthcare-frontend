@@ -15,9 +15,10 @@ export default function Product({ params }: any) {
     const searchParams = useSearchParams();
     const [cartLoaded, setCartLoaded] = useState(false);
 
-    const handleAddToCart = (quantity: any) => {
+    const handleAddToCart = async (quantity: any) => {
         if (!state.isLoggedIn) return redirectUser('/auth/login');
 
+        console.log("working22")
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
 
@@ -26,12 +27,38 @@ export default function Product({ params }: any) {
             } else {
                 newCart[quantity] = 1;
             }
-
+            console.log(newCart)
             return newCart;
         });
+        const cartDetails = [{
+            product_id: searchParams.get('product'),
+            totalQty: [{ quantity: quantity, count: 1 }]
+        }];
+        console.log("cartDetails")
+        console.log(JSON.stringify(cartDetails));
+        try {
+            // Send the PUT request to update the cart on the server
+            const response = await fetch("http://localhost:5000/cart", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: 'include',
+                body: JSON.stringify({ cartDetails }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const updatedData = await response.json();
+            console.log("Cart updated successfully:", updatedData);
+        } catch (error) {
+            console.error("Error updating cart:", error);
+        }
     };
 
-    const handleRemoveFromCart = (quantity: any) => {
+    const handleRemoveFromCart = async (quantity: any) => {
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
 
@@ -43,89 +70,88 @@ export default function Product({ params }: any) {
 
             return newCart;
         });
+        const cartDetails = [{
+            product_id: searchParams.get('product'),
+            totalQty: [{ quantity: quantity, count: -1 }]
+        }];
+    
+        try {
+            // Send the PUT request to update the cart on the server
+            const response = await fetch("http://localhost:5000/cart", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: 'include',
+                body: JSON.stringify({ cartDetails }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            const updatedData = await response.json();
+            console.log("Cart updated successfully:", updatedData);
+        } catch (error) {
+            console.error("Error updating cart:", error);
+        }
     };
-
-    useEffect(() => {
-        const fetchCartStatus = async () => {
-            try {
-                const response = await fetch("http://localhost:5000/cart", {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: 'include',
-                });
-
-                if (response.ok) {
-                    const cartData = await response.json();
-                    const newCart = cartData.reduce((acc: any, item: any) => {
-                        item.totalQty.forEach((qtyItem: any) => {
-                            const quantity = qtyItem.quantity;
-                            const count = qtyItem.count;
-                            acc[quantity] = count;
-                        });
-                        return acc;
-                    }, {});
-                    setCart(newCart);
-                    setCartLoaded(true); // Set cartLoaded to true after receiving data
-                }
-            } catch (error) {
-                console.error("Error fetching cart status:", error);
-            }
-        };
-
-        fetchCartStatus();
-    }, []);
-
-
-    useEffect(() => {
-        const updateBackend = async () => {
-            try {
-                const cartDetails = [{
-                    product_id: searchParams.get('product'),
-                    totalQty: Object.keys(cart).map((qty: any) => ({
-                        quantity: qty,
-                        count: cart[qty]
-                    }))
-                }];
-
-                const response = await fetch("http://localhost:5000/cart", {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    credentials: 'include',
-                    body: JSON.stringify({ cartDetails }),
-                });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-
-                const updatedData = await response.json();
-                console.log("Cart updated successfully:", updatedData);
-            } catch (error) {
-                console.error("Error updating cart:", error);
-            }
-        };
-
-        updateBackend();
-    }, [cart]);
-
 
     useEffect(() => {
         const fetchProductData = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/product?product=${searchParams.get('product')}`);
+                const searchParam = searchParams.get('product');
+                const response = await fetch(`http://localhost:5000/product?product=${searchParam}`);
+                let loginUserCartDataQty: any[] = []; // Initialize as an empty array
                 const data = await response.json();
                 setProductData(data.products[0]);
+                if (response.ok && state.isLoggedIn) { // Check if user is logged in
+                    try {
+                        const response = await fetch("http://localhost:5000/cart", {
+                            method: "GET",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: 'include',
+                        });
+                        if (response.ok) {
+                            const usercart = await response.json();
+                            for (const item of usercart) {
+                                if (item.product_id._id === searchParam) {
+                                    loginUserCartDataQty = item.totalQty;
+                                    console.log(loginUserCartDataQty);
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (err) {
+                        console.log("logic error", err);
+                    }
+                }
+                const newCart = data.products.reduce((acc: any, item: any) => {
+                    item.price.forEach(async (priceItem: any) => {
+                        const quantity = priceItem.quantity;
+                        let count = 0;
+                        // Check if the quantity matches any quantity inside loginUserCartDataQty
+                       if(state.isLoggedIn){
+                        const matchingQty = loginUserCartDataQty.find((qtyItem: any) => qtyItem.quantity === quantity);
+                        if (matchingQty) {
+                            // If a match is found, set count to the count from loginUserCartDataQty
+                            count = matchingQty.count;
+                        }
+                       }
+                        acc[quantity] = count;
+                    });
+                    return acc;
+                }, {});
+                setCart(newCart);
+                setCartLoaded(true);
             } catch (error) {
                 console.error('Error fetching product data:', error);
             }
         };
-
         fetchProductData();
-    }, [params.productId]);
+    }, [params.productId, searchParams, state.isLoggedIn]);
 
 
     return (
@@ -135,13 +161,14 @@ export default function Product({ params }: any) {
                     <div className="lg:w-4/5 mx-auto flex flex-wrap">
                         <div className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded overflow-hidden">
                             <Image
-                                className="w-full h-full object-cover object-center"
-                                src="https://dummyimage.com/400x400"
-                                // src={productData.image}
-                                alt={productData.productName}
-                                width={400}
-                                height={400}
-                            />
+                            className="lg:h-48 md:h-36 w-full object-cover object-center"
+                      //      src={productData.prodImgLink} // Use prodImgLink from the product object
+                            alt={productData.productName}
+                            layout="responsive" // Add this to make the image responsive
+                            width={1024}
+                            height={1024}
+                            
+                        />
                         </div>
                         <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                             <h2 className="text-sm title-font text-gray-500 tracking-widest">
@@ -150,46 +177,10 @@ export default function Product({ params }: any) {
                             <h1 className="text-gray-900 text-3xl title-font font-medium mb-1">
                                 {productData.productName}
                             </h1>
-                            <div className="flex mb-4">
-                                <span className="flex items-center">
-                                    <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-blue-500" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-blue-500" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-blue-500" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    <svg fill="currentColor" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-blue-500" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 text-blue-500" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                                    </svg>
-                                    <span className="text-gray-600 ml-3">4 Reviews</span>
-                                </span>
-                                <span className="flex ml-3 pl-3 py-2 border-l-2 border-gray-200 space-x-2s">
-                                    <a className="text-gray-500">
-                                        <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
-                                        </svg>
-                                    </a>
-                                    <a className="text-gray-500">
-                                        <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                                            <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
-                                        </svg>
-                                    </a>
-                                    <a className="text-gray-500">
-                                        <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-5 h-5" viewBox="0 0 24 24">
-                                            <path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"></path>
-                                        </svg>
-                                    </a>
-                                </span>
-                            </div>
-                            <h3>Description:</h3>
+
+                            <h3 className="text-sm lg:text-base xl:text-lg font-semibold">Description:</h3>
                             <p className="leading-relaxed text-justify">{productData.productIntro}</p><br />
-                            <h3>Benefits:</h3>
+                            <h3 className="text-sm lg:text-base xl:text-lg font-semibold">Benefits:</h3>
                             <p className="leading-relaxed text-justify">{productData.benefits}</p>
                             <div className="overflow-x-auto py-10">
                                 {cartLoaded && (
@@ -204,22 +195,27 @@ export default function Product({ params }: any) {
                                         <tbody>
                                         {productData.price.map(({ quantity, cost, _id }: any) => {
                                             const cartCount = cart[quantity] || 0;
-                                            console.log(cart[quantity], cart, quantity)
+                                            // console.log(cart[quantity], cart, quantity)
+
 
                                             return (
+                                               
                                                 <tr key={_id} className="hover:bg-gray-50 border">
                                                     <td className="py-3 px-4 border text-center">{quantity}</td>
                                                     <td className="py-3 px-4 border text-center">${cost.toFixed(2)}</td>
                                                     <td className="py-3 px-4 border text-center">
                                                         {cartCount > 0 ? (
+                                                    
                                                             <>
+                                                        
                                                                 <button
                                                                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l"
                                                                     onClick={() => handleRemoveFromCart(quantity)}
                                                                 >
                                                                     -
                                                                 </button>
-                                                                <button className="bg-gray-300 text-gray-700 font-bold py-2 px-4">
+                                                                <button 
+                                                                className="bg-gray-300 text-gray-700 font-bold py-2 px-4">
                                                                     {cartCount}
                                                                 </button>
                                                                 <button

@@ -37,14 +37,13 @@ export default function Category({ params }: any) {
               {categoryData.map((item: any, index) => (
                 <div className="p-4 md:w-1/3" key={index}>
                   <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
-                    <Image
-                      className="lg:h-48 md:h-36 w-full object-cover object-center"
-                      // src={item.image} // Replace with the actual property from your API response
-                      src="https://dummyimage.com/722x402"
-                      alt={item.productName} // Replace with the actual property from your API response
-                      width={722}
-                      height={402}
-                    />
+                  <Image
+                            className="lg:h-48 md:h-36 w-full object-cover object-center"
+                        //    src={item.prodImgLink} // Use prodImgLink from the product object
+                            alt={item.productName}
+                            width={722}
+                            height={402}
+                        />
                     <div className="p-6">
                       <h2 className="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">
                         {item.categoryName} {/* Replace with the actual property from your API response */}

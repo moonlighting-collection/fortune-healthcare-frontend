@@ -1,76 +1,224 @@
 'use client';
 
+// Import necessary modules
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from "react";
+import { redirectUser } from "@/app/auth/authHelper";
+import { useGlobalState } from "@/app/globalstatecontext";
 
+// Define the Cart component
 export default function Cart() {
-  const [cart, setCart] = useState([
-    {
-      id: 1,
-      name: 'Nike Air Max 2019',
-      packs: [
-        { size: '36EU - 4US', quantity: 2, price: 259 },
-        { size: '36EU - 6US', quantity: 4, price: 789 }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Adidas Superstar',
-      packs: [
-        { size: '38EU - 6US', quantity: 3, price: 329 },
-        { size: '38EU - 8US', quantity: 2, price: 459 }
-      ]
+  // Initialize state variables
+  const [cart, setCart] = useState<any[]>([]);
+  const [isRemoveAllQtyCalled, setIsRemoveAllQtyCalled] = useState(false);
+  const { state } = useGlobalState();
+
+  // Fetch cart data from the server
+  useEffect(() => {
+    const fetchFinalProducts = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/cart", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const usercart = await response.json();
+          // Transform the received cart data into the expected format
+          const transformedCart = usercart.map((product: any) => ({
+            id: product.product_id._id,
+            name: product.product_id.productName,
+            packs: product.totalQty.map((pack: any) => ({
+              size: pack.quantity.toString(),
+              quantity: pack.count,
+              price: pack.cost
+            })),
+            prodImgLink: product.product_id.prodImgLink // Store product image link
+          }));
+          setCart(transformedCart);
+          console.log("transformedCart")
+          console.log(JSON.stringify(transformedCart));
+        }
+      } catch (err) {
+        console.log("logic error", err);
+      }
     }
-  ]);
+    console.log("Cart Length:", cart.length);
 
-  const handleQuantityChange = (productId: any, packIndex: any, newQuantity: any) => {
-    setCart((prevCart: any) =>
-      prevCart.map((item: any) =>
-        item.id === productId
-          ? {
-            ...item,
-            packs: item.packs.map((pack: any, index: any) =>
-              index === packIndex ? { ...pack, quantity: newQuantity } : pack
-            ),
-          }
-          : item
-      )
-    );
-  };
+    fetchFinalProducts();
+    if (isRemoveAllQtyCalled) {
+      fetchFinalProducts();
+      setIsRemoveAllQtyCalled(false);
+    }
+  },[isRemoveAllQtyCalled]);
+  
 
-  const handleRemoveItem = (productId: any, packIndex: any) => {
-    setCart((prevCart: any) =>
-      prevCart
-        .map((item: any) =>
-          item.id === productId
-            ? {
+  const removeAllQty = async (productId: any, quantity: any, count:any, item:any) => {
+    if (!state.isLoggedIn) return redirectUser('/auth/login');
+    console.log("item")
+    console.log(JSON.stringify(item))
+    try {
+      const updatedCart = cart.map((item) => {
+        if (item.id === productId) {
+          const existingPackIndex = item.packs.findIndex((pack: { size: any; }) => pack.size === quantity);
+          if (existingPackIndex !== -1) {
+            // If the pack already exists, update its quantity if it's greater than 1
+            const updatedPacks = item.packs.map((pack: { quantity: number; }, index: any) =>
+                index === existingPackIndex ? { ...pack, quantity: Math.max(pack.quantity - count, 0) } : pack
+            );
+            return {
               ...item,
-              packs: item.packs.filter((_pack: any, index: any) => index !== packIndex),
-            }
-            : item
-        )
-        .filter((item: any) => item.packs.length > 0) // Remove product if no packs remaining
-    );
-  };
-
-  const handleAddToCart = (productId: any, packIndex: any) => {
-    setCart((prevCart: any) =>
-      prevCart.map((item: any) =>
-        item.id === productId
-          ? {
-            ...item,
-            packs: item.packs.map((pack: any, index: any) =>
-              index === packIndex ? { ...pack, quantity: 1 } : pack
-            ),
+              packs: updatedPacks
+            };
           }
-          : item
-      )
-    );
-  };
+        }
+        return item;
+      });
+  
+      setCart(updatedCart);
+  
+      // Send the PUT request to update the cart on the server
+      
+        const cartDetails = [{
+          product_id: productId, // Pass the product_id here
+          totalQty: [{ quantity: parseInt(quantity), count: -count }] // Parse quantity as integer
+        }];
+        console.log("cartDetails")
+        console.log(JSON.stringify(cartDetails));
+        const response = await fetch("http://localhost:5000/cart", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: 'include',
+          body: JSON.stringify({ cartDetails }),
+        });
+        
+  
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }else{
+          setIsRemoveAllQtyCalled(true);
+        }
+  
+        const updatedData = await response.json();
+        console.log("Cart updated successfully:", updatedData);
+      
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
+    };
+  //new adty 
+  const addQTY = async (productId: any, quantity: any) => {
+    if (!state.isLoggedIn) return redirectUser('/auth/login');
+    
+    try {
+        const updatedCart = cart.map((item) => {
+            if (item.id === productId) {
+                const existingPackIndex = item.packs.findIndex((pack: { size: any; }) => pack.size === quantity);
+                if (existingPackIndex !== -1) {
+                    // If the pack already exists, update its quantity
+                    return {
+                        ...item,
+                        packs: item.packs.map((pack: { quantity: number; }, index: any) =>
+                            index === existingPackIndex ? { ...pack, quantity: pack.quantity + 1 } : pack
+                        )
+                    };
+                } else {
+                    // If the pack does not exist, add it with quantity 1
+                    return {
+                        ...item,
+                        packs: [...item.packs, { size: quantity, quantity: 1, price: 0 }]
+                    };
+                }
+            }
+            return item;
+        });
 
-  const handleEmptyCart = () => {
-    setCart([]);
-  };
+        setCart(updatedCart);
+
+        // Send the PUT request to update the cart on the server
+        const cartDetails = [{
+          product_id: productId, // Pass the product_id here
+          totalQty: [{ quantity: parseInt(quantity), count: 1 }] // Parse quantity as integer
+      }];
+        console.log("cartDetails")
+        console.log(JSON.stringify(cartDetails));
+        const response = await fetch("http://localhost:5000/cart", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            credentials: 'include',
+            body: JSON.stringify({ cartDetails }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const updatedData = await response.json();
+        console.log("Cart updated successfully:", updatedData);
+    } catch (error) {
+        console.error("Error updating cart:", error);
+    }
+};
+
+const subtractQty = async (productId: any, quantity: any) => {
+  if (!state.isLoggedIn) return redirectUser('/auth/login');
+
+  try {
+    const updatedCart = cart.map((item) => {
+      if (item.id === productId) {
+        const existingPackIndex = item.packs.findIndex((pack: { size: any; }) => pack.size === quantity);
+        if (existingPackIndex !== -1) {
+          // If the pack already exists, update its quantity if it's greater than 1
+          const updatedPacks = item.packs.map((pack: { quantity: number; }, index: any) =>
+            index === existingPackIndex ? { ...pack, quantity: Math.max(pack.quantity - 1, 1) } : pack
+          );
+          return {
+            ...item,
+            packs: updatedPacks
+          };
+        }
+      }
+      return item;
+    });
+
+    setCart(updatedCart);
+
+    // Send the PUT request to update the cart on the server
+    if (updatedCart.find(item => item.id === productId)?.packs.find(pack => pack.size === quantity)?.quantity >= 1 ) {
+      const cartDetails = [{
+        product_id: productId, // Pass the product_id here
+        totalQty: [{ quantity: parseInt(quantity), count: -1 }] // Parse quantity as integer
+      }];
+      console.log("cartDetails")
+      console.log(JSON.stringify(cartDetails));
+      const response = await fetch("http://localhost:5000/cart", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: 'include',
+        body: JSON.stringify({ cartDetails }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const updatedData = await response.json();
+      console.log("Cart updated successfully:", updatedData);
+    }
+  } catch (error) {
+    console.error("Error updating cart:", error);
+  }
+};
+
+
 
   const calculateTotalAmountForPack = (pack: any) => {
     return pack.quantity * pack.price;
@@ -86,133 +234,123 @@ export default function Cart() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const shippingCost = 25; // Assuming a fixed shipping cost
+    const shippingCost = 25; // Fixed shipping cost
     return subtotal + shippingCost;
   };
-
+2
   return (
-    <section>
-      <div className="bg-gray-100 py-24">
-        <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
-        <div className="mx-auto max-w-4xl justify-center px-6 xl:px-0">
-          {cart.map((item: any) => (
-            <div key={item.id} className="mb-6 rounded-lg bg-white p-6 shadow-md">
-              <div className="flex justify-between items-center">
+    <section className="bg-gray-100 py-6 px-2 sm:px-4">
+      <h1 className="mb-6 text-center text-2xl font-bold">Cart Items</h1>
+      <div className="max-w-screen-md mx-auto">
+        {cart.map((item) => {
+          if (item.packs.length > 0) {
+            return (
+              <div key={item.id} className="mb-6 bg-white rounded-lg shadow-md">
                 <div className="flex items-center">
-                  <img src="https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80" alt="product-image" className="w-full rounded-lg sm:w-40" />
+                  <img
+                  //  src={item.prodImgLink}
+                    alt={item.name}
+                    className="w-24 sm:w-40 h-24 sm:h-auto rounded-l-lg"
+                  />
                   <div className="ml-4">
                     <h2 className="text-lg font-bold text-gray-900">{item.name}</h2>
                   </div>
                 </div>
-                <svg
-                  onClick={() => handleRemoveItem(item.id, 0)}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="h-5 w-5 cursor-pointer duration-150 hover:text-red-500"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </div>
-              {item.packs.length > 0 && (
-                <table className="w-full border-collapse mt-4">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Size</th>
-                      <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Quantity</th>
-                      <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Price</th>
-                      <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Total</th>
-                      <th className="py-2 px-4 font-semibold text-sm text-gray-700 border">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {item.packs.map((pack: any, packIndex: any) => (
-                      <tr key={packIndex} className="hover:bg-gray-50 border">
-                        <td className="py-3 px-4 border text-center">{pack.size}</td>
-                        <td className="py-3 px-4 border text-center">
-                          <div className="flex items-center border-gray-100">
-                            <button
-                              onClick={() => handleQuantityChange(item.id, packIndex, Math.max(pack.quantity - 1, 0))}
-                              className="cursor-pointer rounded-l bg-gray-100 py-1 px-3.5 duration-100 hover:bg-blue-500 hover:text-blue-50"
-                            >
-                              -
-                            </button>
-                            <input
-                              className="h-8 w-8 border bg-white text-center text-xs outline-none"
-                              type="number"
-                              value={pack.quantity}
-                              onChange={(e) => handleQuantityChange(item.id, packIndex, parseInt(e.target.value))}
-                              min="0"
-                            />
-                            <button
-                              onClick={() => handleQuantityChange(item.id, packIndex, pack.quantity + 1)}
-                              className="cursor-pointer rounded-r bg-gray-100 py-1 px-3 duration-100 hover:bg-blue-500 hover:text-blue-50"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 border text-center">${pack.price.toFixed(2)}</td>
-                        <td className="py-3 px-4 border text-center">${calculateTotalAmountForPack(pack).toFixed(2)}</td>
-                        <td className="py-3 px-4 border text-center">
-                          {pack.quantity > 0 ? (
-                            <button
-                              onClick={() => handleRemoveItem(item.id, packIndex)}
-                              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                              Remove
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => handleAddToCart(item.id, packIndex)}
-                              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                            >
-                              Add to Cart
-                            </button>
-                          )}
-                        </td>
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse mt-4">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="px-2 sm:px-4 py-2 font-semibold text-sm text-gray-700 border">Pack</th>
+                        <th className="px-2 sm:px-4 py-2 font-semibold text-sm text-gray-700 border w-1/4 sm:w-1/6">
+                          Quantity
+                        </th>
+                        <th className="px-2 sm:px-4 py-2 font-semibold text-sm text-gray-700 border">Price</th>
+                        <th className="px-2 sm:px-4 py-2 font-semibold text-sm text-gray-700 border">Total</th>
+                        <th className="px-2 sm:px-4 py-2 font-semibold text-sm text-gray-700 border">Action</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          ))}
-          <div className="mt-6 h-full rounded-lg border bg-white p-6 shadow-md md:mt-0">
-            <div className="mb-2 flex justify-between">
-              <p className="text-gray-700">Subtotal</p>
-              <p className="text-gray-700">${calculateSubtotal().toFixed(2)}</p>
-            </div>
-            <div className="flex justify-between">
-              <p className="text-gray-700">Flat Shipping Charge</p>
-              <p className="text-gray-700">$25</p>
-            </div>
-            <hr className="my-4" />
-            <div className="flex justify-between">
-              <p className="text-lg font-bold">Total</p>
-              <div className="">
-                <p className="mb-1 text-right text-lg font-bold">${calculateTotal().toFixed(2)}</p>
-                <p className="text-sm text-gray-700">including VAT</p>
+                    </thead>
+                    <tbody>
+                      {item.packs.map((pack: any, packIndex: any) =>
+                        pack.quantity > 0 && (
+                          <tr key={packIndex} className="hover:bg-gray-50 border">
+                            <td className="px-2 sm:px-4 py-2 border text-center">{pack.size}</td>
+                            <td className="px-2 sm:px-4 py-2 border text-center">
+                              <div className="flex items-center justify-center sm:justify-start">
+                              <button
+                                onClick={() => subtractQty(item.id, pack.size)}
+                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-4 rounded-l h-10"
+                                disabled={pack.quantity === 1} // Disable the button if quantity is 1
+                              >
+                                -
+                              </button>
+                                <input
+                                  className="w-12 sm:w-16 h-10 bg-gray-300 font-bold text-black text-center"
+                                  type="number"
+                                  value={pack.quantity}
+                                
+                                  min="0"
+                                  readOnly
+                                />
+                                <button
+                                  onClick={() => addQTY(item.id, pack.size)}
+                                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-4 rounded-r h-10"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 border text-center">${pack.price.toFixed(2)}</td>
+                            <td className="px-2 sm:px-4 py-2 border text-center">
+                              ${calculateTotalAmountForPack(pack).toFixed(2)}
+                            </td>
+                            <td className="px-2 sm:px-4 py-2 border text-center">
+                              <button
+                                onClick={() => removeAllQty(item.id, pack.size, pack.quantity, item)}
+                                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 sm:py-2 sm:px-4 rounded"
+                              >
+                                Remove
+                              </button>
+                            </td>
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+            );
+          }
+          return null; // If item.packs has no items, return null to render nothing
+        })}
+        <div className="mt-6 bg-white rounded-lg border p-4 shadow-md">
+          <div className="mb-4 flex justify-between">
+            <p className="text-gray-700">Subtotal</p>
+            <p className="text-gray-700">${calculateSubtotal().toFixed(2)}</p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-gray-700">Flat Shipping Charge</p>
+            <p className="text-gray-700">$25</p>
+          </div>
+          <hr className="my-4" />
+          <div className="flex justify-between">
+            <p className="text-lg font-bold">Total</p>
+            <div>
+              <p className="text-right text-lg font-bold">${calculateTotal().toFixed(2)}</p>
+              <p className="text-sm text-gray-700">including VAT</p>
             </div>
-            <div className="flex gap-8 justify-around">
-              <button
-                onClick={handleEmptyCart}
-                className="mt-6 w-full rounded-md border border-blue-500 py-1.5 font-medium text-blue-500 hover:border-blue-800 hover:text-blue-800"
-              >
-                Empty Cart
-              </button>
-              <Link href='/checkout'
-                className="mt-6 w-full rounded-md bg-blue-500 py-1.5 font-medium text-center text-white hover:bg-blue-600"
-              >
-                Check out
-              </Link>
-            </div>
+          </div>
+          <div className="flex gap-8 justify-around mt-6">
+          {/* {calculateTotal()>25 && ( */}
+  <Link
+    href="/checkout"
+    className="w-full rounded-md bg-blue-500 py-1.5 font-medium text-center text-white hover:bg-blue-600"
+  >
+    Check out
+  </Link>
+ {/* )} */}
           </div>
         </div>
       </div>
     </section>
   );
-}
+      }  

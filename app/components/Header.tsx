@@ -76,7 +76,7 @@ const Header = () => {
                   <input type="text" id="input-group-search" className="block w-full p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search category" />
                 </div>
               </div> */}
-                <ul className="h-48 py-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200">
+                <ul className="h-37 py-3 overflow-y-auto text-sm text-gray-700 dark:text-gray-200">
                   <Link href="/category/COVID MEDS">
                     <li onClick={handleDropdownClick}>
                       <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
@@ -84,41 +84,27 @@ const Header = () => {
                       </div>
                     </li>
                   </Link>
-                  <Link href="/category/Jese Leos">
+                  <Link href="/category/ANTIBACTERIAL">
                     <li onClick={handleDropdownClick}>
                       <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Jese Leos</label>
+                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">ANTIBACTERIAL</label>
                       </div>
                     </li>
                   </Link>
-                  <Link href="/category/Michael Gough">
+                  <Link href="/category/PARASITIC INFECTIONS">
                     <li onClick={handleDropdownClick}>
                       <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Michael Gough</label>
+                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">PARASITIC INFECTIONS</label>
                       </div>
                     </li>
-                  </Link>
-                  <Link href="/category/Robert Wall">
+                    </Link>
+                     {/* <Link href="">
                     <li onClick={handleDropdownClick}>
                       <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Robert Wall</label>
+                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">COMMING SOON</label>
                       </div>
                     </li>
-                  </Link>
-                  <Link href="/category/Joseph Mcfall">
-                    <li onClick={handleDropdownClick}>
-                      <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Joseph Mcfall</label>
-                      </div>
-                    </li>
-                  </Link>
-                  <Link href="/category/Leslie Livingston">
-                    <li onClick={handleDropdownClick}>
-                      <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
-                        <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">Leslie Livingston</label>
-                      </div>
-                    </li>
-                  </Link>
+                  </Link> */}
                 </ul>
                 {/* <a href="#" className="flex items-center p-3 text-sm font-medium text-white border-t border-gray-200 rounded-b-lg bg-gray-50 dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white hover:underline">
                 <svg className="w-4 h-4 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="white" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
