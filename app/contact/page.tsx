@@ -54,11 +54,7 @@ const FileUploadForm = () => {
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log("inside submit")
-
-    console.log('Email:', email);
-    console.log('Details:', details);
-    console.log('File:', file);
+   
 
     const formData = new FormData();
     formData.append('email', email);
@@ -66,7 +62,6 @@ const FileUploadForm = () => {
     // if (file) {
     //     formData.append('file', file);
     // }
-    console.log('FormData:', formData);
 
     try {
         const response = await fetch('http://localhost:5000/checkout/prescription', {
@@ -79,9 +74,9 @@ const FileUploadForm = () => {
         });
 
         if (response.ok) {
-            console.log('Form submitted successfully!');
+//            console.log('Form submitted successfully!');
         } else {
-            console.error('Form submission failed.');
+            //console.error('Form submission failed.');
         }
     } catch (error) {
         console.error('Error submitting form:', error);

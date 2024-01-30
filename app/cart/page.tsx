@@ -38,14 +38,14 @@ export default function Cart() {
             prodImgLink: product.product_id.prodImgLink // Store product image link
           }));
           setCart(transformedCart);
-          console.log("transformedCart")
-          console.log(JSON.stringify(transformedCart));
+          // console.log("transformedCart")
+          // console.log(JSON.stringify(transformedCart));
         }
       } catch (err) {
-        console.log("logic error", err);
+        // console.log("logic error", err);
       }
     }
-    console.log("Cart Length:", cart.length);
+   // console.log("Cart Length:", cart.length);
 
     fetchFinalProducts();
     if (isRemoveAllQtyCalled) {
@@ -57,8 +57,8 @@ export default function Cart() {
 
   const removeAllQty = async (productId: any, quantity: any, count:any, item:any) => {
     if (!state.isLoggedIn) return redirectUser('/auth/login');
-    console.log("item")
-    console.log(JSON.stringify(item))
+    // console.log("item")
+    // console.log(JSON.stringify(item))
     try {
       const updatedCart = cart.map((item) => {
         if (item.id === productId) {
@@ -85,8 +85,8 @@ export default function Cart() {
           product_id: productId, // Pass the product_id here
           totalQty: [{ quantity: parseInt(quantity), count: -count }] // Parse quantity as integer
         }];
-        console.log("cartDetails")
-        console.log(JSON.stringify(cartDetails));
+        // console.log("cartDetails")
+        // console.log(JSON.stringify(cartDetails));
         const response = await fetch("http://localhost:5000/cart", {
           method: "PUT",
           headers: {
@@ -104,7 +104,7 @@ export default function Cart() {
         }
   
         const updatedData = await response.json();
-        console.log("Cart updated successfully:", updatedData);
+     //   console.log("Cart updated successfully:", updatedData);
       
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -144,8 +144,8 @@ export default function Cart() {
           product_id: productId, // Pass the product_id here
           totalQty: [{ quantity: parseInt(quantity), count: 1 }] // Parse quantity as integer
       }];
-        console.log("cartDetails")
-        console.log(JSON.stringify(cartDetails));
+        // console.log("cartDetails")
+        // console.log(JSON.stringify(cartDetails));
         const response = await fetch("http://localhost:5000/cart", {
             method: "PUT",
             headers: {
@@ -160,7 +160,7 @@ export default function Cart() {
         }
 
         const updatedData = await response.json();
-        console.log("Cart updated successfully:", updatedData);
+      //  console.log("Cart updated successfully:", updatedData);
     } catch (error) {
         console.error("Error updating cart:", error);
     }
@@ -195,8 +195,8 @@ const subtractQty = async (productId: any, quantity: any) => {
         product_id: productId, // Pass the product_id here
         totalQty: [{ quantity: parseInt(quantity), count: -1 }] // Parse quantity as integer
       }];
-      console.log("cartDetails")
-      console.log(JSON.stringify(cartDetails));
+      // console.log("cartDetails")
+      // console.log(JSON.stringify(cartDetails));
       const response = await fetch("http://localhost:5000/cart", {
         method: "PUT",
         headers: {
@@ -211,10 +211,10 @@ const subtractQty = async (productId: any, quantity: any) => {
       }
 
       const updatedData = await response.json();
-      console.log("Cart updated successfully:", updatedData);
+      //console.log("Cart updated successfully:", updatedData);
     }
   } catch (error) {
-    console.error("Error updating cart:", error);
+    //console.error("Error updating cart:", error);
   }
 };
 
@@ -248,7 +248,7 @@ const subtractQty = async (productId: any, quantity: any) => {
               <div key={item.id} className="mb-6 bg-white rounded-lg shadow-md">
                 <div className="flex items-center">
                   <img
-                  //  src={item.prodImgLink}
+                    src={item.prodImgLink}
                     alt={item.name}
                     className="w-24 sm:w-40 h-24 sm:h-auto rounded-l-lg"
                   />

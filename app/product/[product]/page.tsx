@@ -18,7 +18,6 @@ export default function Product({ params }: any) {
     const handleAddToCart = async (quantity: any) => {
         if (!state.isLoggedIn) return redirectUser('/auth/login');
 
-        console.log("working22")
         setCart((prevCart: any) => {
             const newCart = { ...prevCart };
 
@@ -27,15 +26,13 @@ export default function Product({ params }: any) {
             } else {
                 newCart[quantity] = 1;
             }
-            console.log(newCart)
             return newCart;
         });
         const cartDetails = [{
             product_id: searchParams.get('product'),
             totalQty: [{ quantity: quantity, count: 1 }]
         }];
-        console.log("cartDetails")
-        console.log(JSON.stringify(cartDetails));
+       
         try {
             // Send the PUT request to update the cart on the server
             const response = await fetch("http://localhost:5000/cart", {
@@ -52,9 +49,9 @@ export default function Product({ params }: any) {
             }
     
             const updatedData = await response.json();
-            console.log("Cart updated successfully:", updatedData);
+            //console.log("Cart updated successfully:", updatedData);
         } catch (error) {
-            console.error("Error updating cart:", error);
+            //console.error("Error updating cart:", error);
         }
     };
 
@@ -91,9 +88,9 @@ export default function Product({ params }: any) {
             }
     
             const updatedData = await response.json();
-            console.log("Cart updated successfully:", updatedData);
+           // console.log("Cart updated successfully:", updatedData);
         } catch (error) {
-            console.error("Error updating cart:", error);
+           // console.error("Error updating cart:", error);
         }
     };
 
@@ -119,13 +116,12 @@ export default function Product({ params }: any) {
                             for (const item of usercart) {
                                 if (item.product_id._id === searchParam) {
                                     loginUserCartDataQty = item.totalQty;
-                                    console.log(loginUserCartDataQty);
                                     break;
                                 }
                             }
                         }
                     } catch (err) {
-                        console.log("logic error", err);
+                     //   console.log("logic error", err);
                     }
                 }
                 const newCart = data.products.reduce((acc: any, item: any) => {
@@ -162,7 +158,7 @@ export default function Product({ params }: any) {
                         <div className="lg:w-1/2 w-full lg:h-auto h-64 object-cover object-center rounded overflow-hidden">
                             <Image
                             className="lg:h-48 md:h-36 w-full object-cover object-center"
-                      //      src={productData.prodImgLink} // Use prodImgLink from the product object
+                            src={productData.prodImgLink} // Use prodImgLink from the product object
                             alt={productData.productName}
                             layout="responsive" // Add this to make the image responsive
                             width={1024}

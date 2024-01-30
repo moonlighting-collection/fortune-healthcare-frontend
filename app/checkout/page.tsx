@@ -14,6 +14,33 @@ export default function Checkout() {
         cardCvv: '',
         nameOnCard: '', 
     });
+    interface CreditCardDetails {
+    cardNumber: string;
+    cardExpiry: string;
+    cardCvv: string;
+}
+
+interface UserOrder {
+    // Define the structure of the user order object if needed
+}
+
+interface FormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    address: string;
+    billingAddress: string;
+    city: string;
+    postcode: string;
+    note: string;
+    creditCardDetails: CreditCardDetails;
+    userOrder: UserOrder; // Define the structure of the user order object if needed
+    Total: number;
+}
+
+
+// Now you can safely access formData properties without TypeScript errors
+
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -64,12 +91,11 @@ export default function Checkout() {
                 body: JSON.stringify(newFeedbackData),
             });
             if(sendFeedBack){
-                console.log("perfect")
-                console.log("Response")
+            
             }   
 
         }catch (err){
-            console.log(err)
+           
         }
         redirectUser('/');
         setPopupOpen(false);
@@ -80,7 +106,13 @@ export default function Checkout() {
         event.preventDefault();
         const requiredFields = ["firstName", "lastName", "email", "address", "creditCardDetails.cardNumber", "creditCardDetails.cardExpiry", "creditCardDetails.cardCvv", "creditCardDetails.nameOnCard"];
         const emptyFields = requiredFields.filter(field => {
-            const fieldValue = field.includes('creditCardDetails') ? creditCardData[field.split('.')[1]] : formData[field];
+            let fieldValue;
+            if (field.includes('creditCardDetails')) {
+                const creditCardField = field.split('.')[1] as keyof CreditCardDetails;
+                fieldValue = creditCardData[creditCardField];
+            } else {
+                fieldValue = formData[field as keyof FormData];
+            }
             return !fieldValue;
         });
         
@@ -91,7 +123,6 @@ export default function Checkout() {
         formData.creditCardDetails = creditCardData;
         formData.userOrder = productOrderDetails
         formData.Total = orderSummary.total;
-        console.log(JSON.stringify(formData));
         if(formData.Total > 25){
             setPopupOpen(true);
             try {
@@ -104,8 +135,7 @@ export default function Checkout() {
                     body: JSON.stringify(formData),
                 });
                 if(sendOrder){
-                    console.log("perfect")
-                    console.log("Response")
+             
                 }   
     
             }catch (err){
@@ -157,8 +187,7 @@ export default function Checkout() {
                         })),
                       }));
                       setproductOrderDetails(userOrder);
-                      console.log("userOrderrr");
-                      console.log(userOrder);
+                     
                     const subtotal = transformedCart.reduce((acc: number, item: any) => acc + item.price, 0);
                     const shippingTax = 25.00; // Assuming this is a fixed value
                     const total = subtotal + shippingTax;

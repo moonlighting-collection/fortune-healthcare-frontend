@@ -39,7 +39,7 @@ export default function Category({ params }: any) {
                   <div className="h-full border-2 border-gray-200 border-opacity-60 rounded-lg overflow-hidden">
                   <Image
                             className="lg:h-48 md:h-36 w-full object-cover object-center"
-                        //    src={item.prodImgLink} // Use prodImgLink from the product object
+                            src={item.prodImgLink} // Use prodImgLink from the product object
                             alt={item.productName}
                             width={722}
                             height={402}
