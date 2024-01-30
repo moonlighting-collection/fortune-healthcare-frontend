@@ -21,9 +21,10 @@ const Header = () => {
     checkAuthentication().then((res: any) => {
       if (res) {
         setState((prev) => ({ ...prev, isLoggedIn: true }));
-      } else {
-        setState((prev) => ({ ...prev, isLoggedIn: false })); 
       }
+      //  else {
+      //   setState((prev) => ({ ...prev, isLoggedIn: false })); 
+      // }
     });
   }, []); 
 
