@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
-import { FormEvent, ChangeEvent, useRef, useState } from 'react';
+import { FormEvent, ChangeEvent, useRef, useState, useEffect} from 'react';
 import { LoginBtn, RegisterBtn } from '../AuthButtons';
 import { redirectUser } from '../authHelper';
 import { useGlobalState } from '@/app/globalstatecontext';
@@ -11,10 +11,12 @@ import { useGlobalState } from '@/app/globalstatecontext';
 export default function Auth({ params }: any) {
     params.auth !== 'login' && params.auth !== 'signup' && notFound();
 
+    
     const { setState } = useGlobalState();
     // const showNotification = useNotification();
 
     const [isHovered, setIsHovered] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -31,6 +33,11 @@ export default function Auth({ params }: any) {
         setIsHovered(false);
     };
 
+    useEffect(() => {
+        if (isAuthenticated) {
+            redirectUser('/'); // Redirect to the desired destination
+        }
+    }, [isAuthenticated]);
     const handleFormFieldValueChange = (e: ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prevFormData) => ({
@@ -38,6 +45,7 @@ export default function Auth({ params }: any) {
             [name]: value,
         }));
     };
+  
 
     const handleFormSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -70,17 +78,8 @@ export default function Auth({ params }: any) {
 
             if (response.ok) {
                 if (params.auth === 'login') {
-                    console.log("inside Login")
-                    setState(prev => {
-                        // Update state
-                        const newState = { ...prev, isLoggedIn: true };
-                      
-                        // Perform actions that depend on the updated state
-                        redirectUser('/');
-                      
-                        // Return the new state
-                        return newState;
-                      });
+                    setState((prev) => ({ ...prev, isLoggedIn: true }));
+                    setIsAuthenticated(true); // Signal that authentication is complete
                 } else {
                     redirectUser('/auth/login');
                 }
@@ -91,6 +90,7 @@ export default function Auth({ params }: any) {
             console.error('Error during authentication:', error);
         }
     };
+    
 
     return (
         <div className="relative py-24 flex justify-center gap-24 items-center bg-gray-100">

@@ -29,6 +29,7 @@ interface FormData {
     lastName: string;
     email: string;
     address: string;
+    phoneNumber: string;
     billingAddress: string;
     city: string;
     postcode: string;
@@ -46,6 +47,7 @@ interface FormData {
         firstName: '',
         lastName: '',
         email: '',
+        phoneNumber: '',
         address: '',
         billingAddress: '',
         city: '',
@@ -104,7 +106,7 @@ interface FormData {
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
-        const requiredFields = ["firstName", "lastName", "email", "address", "creditCardDetails.cardNumber", "creditCardDetails.cardExpiry", "creditCardDetails.cardCvv", "creditCardDetails.nameOnCard"];
+        const requiredFields = ["firstName", "lastName", "email", "phoneNumber", "address", "creditCardDetails.cardNumber", "creditCardDetails.cardExpiry", "creditCardDetails.cardCvv", "creditCardDetails.nameOnCard"];
         const emptyFields = requiredFields.filter(field => {
             let fieldValue;
             if (field.includes('creditCardDetails')) {
@@ -271,14 +273,28 @@ interface FormData {
                                 />
                             </div>
                         </div>
-                        <div className="mt-4">
+                        <div className="flex flex-col md:flex-row md:justify-between gap-2 mb-6">
                             <div className="w-full">
-                                <label htmlFor="Email" className="block mb-3 text-sm font-semibold text-gray-500">Email</label>
+                                <label htmlFor="firstName" className="block text-sm font-semibold text-gray-500">
+                                Email
+                                </label>
                                 <input
-                                    name="email"
+                                       name="email"
+                                       type="text"
+                                       placeholder="Email"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    onChange={handleInputChange}
+                                />
+                            </div>
+                            <div className="w-full">
+                                <label htmlFor="lastName" className="block text-sm font-semibold text-gray-500">
+                                    Contact Number
+                                </label>
+                                <input
+                                    name="phoneNumber"
                                     type="text"
-                                    placeholder="Email"
-                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                    placeholder="Contact Number"
+                                    className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -375,7 +391,7 @@ interface FormData {
                                     </div>
                                    
                         </div>
-                        <p>*Your card will be charged by 1StepCure for the above amount</p>
+                        <p>*Your card will be charged by the name "ASHER HEALTH STORE"</p>
                         <div className="relative pt-3 xl:pt-6">
                             <label htmlFor="note" className="block mb-3 text-sm font-semibold text-gray-500"> Notes (Optional)</label>
                             <textarea
@@ -433,7 +449,7 @@ interface FormData {
                 <span className="text-gray-600">Total</span>
                 <span className="ml-auto font-bold text-blue-600">${parseFloat(orderSummary.total).toFixed(2)}</span>
             </div>
-            <p>*Your card will be charged by 1StepCure for the above amount</p>
+            <p>*Your card will be charged by the name "ASHER HEALTH STORE" for the above amount</p>
         </div>
     </div>
 )}

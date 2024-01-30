@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../globalstatecontext';
 import { checkAuthentication, logout } from '@/app/helpers/auth'
+import { redirectUser } from '../auth/authHelper';
 
 const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -12,19 +13,20 @@ const Header = () => {
   const handleDropdownClick = () => setIsDropdownOpen(currState => !currState)
   const handleLogout = () => {
     setState((prev) => ({ ...prev, isLoggedIn: false }))
-    logout()
+    const isLoggedOut = logout();
+    isLoggedOut ? redirectUser("/auth/login") : null;
   }
 
   useEffect(() => {
-    checkAuthentication().then((res) => {
+    checkAuthentication().then((res: any) => {
       console.log("ressss")
       console.log(res);
       if (res) {
-        setState((prev) => ({ ...prev, isLoggedIn: true }));
         console.log("loggedinnnnnn")
+        setState((prev) => ({ ...prev, isLoggedIn: true }));
       } else {
-        setState((prev) => ({ ...prev, isLoggedIn: false }));
         console.log("logggoutttt")
+        setState((prev) => ({ ...prev, isLoggedIn: false })); 
       }
     });
   }, []); 
