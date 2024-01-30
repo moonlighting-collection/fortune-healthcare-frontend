@@ -17,10 +17,17 @@ const Header = () => {
 
   useEffect(() => {
     checkAuthentication().then((res) => {
-      if (res) setState(prev => ({ ...prev, isLoggedIn: true }))
-      else setState(prev => ({ ...prev, isLoggedIn: false }))
-    })
-  }, [])
+      console.log("ressss")
+      console.log(res);
+      if (res) {
+        setState((prev) => ({ ...prev, isLoggedIn: true }));
+        console.log("loggedinnnnnn")
+      } else {
+        setState((prev) => ({ ...prev, isLoggedIn: false }));
+        console.log("logggoutttt")
+      }
+    });
+  }, []); 
 
   return (
     <header className="text-gray-800 body-font">

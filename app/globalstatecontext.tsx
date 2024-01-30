@@ -30,7 +30,8 @@ const useGlobalState = () => {
   if (!context) {
     throw new Error("useGlobalState must be used within a GlobalStateContext");
   }
+  console.log("context")
+  console.log(context)
   return context;
 };
-
 export { GlobalStateProvider, useGlobalState };

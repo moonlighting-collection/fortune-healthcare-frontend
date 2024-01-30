@@ -70,8 +70,17 @@ export default function Auth({ params }: any) {
 
             if (response.ok) {
                 if (params.auth === 'login') {
-                    setState((prev) => ({ ...prev, isLoggedIn: true }));
-                    redirectUser('/');
+                    console.log("inside Login")
+                    setState(prev => {
+                        // Update state
+                        const newState = { ...prev, isLoggedIn: true };
+                      
+                        // Perform actions that depend on the updated state
+                        redirectUser('/');
+                      
+                        // Return the new state
+                        return newState;
+                      });
                 } else {
                     redirectUser('/auth/login');
                 }
