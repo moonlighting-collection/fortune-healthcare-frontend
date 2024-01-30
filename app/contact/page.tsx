@@ -52,32 +52,41 @@ const FileUploadForm = () => {
       setFile(e.target.files[0]);
     }
   };
-
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    console.log("inside submit")
+
+    console.log('Email:', email);
+    console.log('Details:', details);
+    console.log('File:', file);
 
     const formData = new FormData();
-    formData.set('email', email);
-    formData.set('details', details);
-    if (file) {
-      formData.set('file', file);
-    }
+    formData.append('email', email);
+    formData.append('details', details);
+    // if (file) {
+    //     formData.append('file', file);
+    // }
+    console.log('FormData:', formData);
 
     try {
-      const response = await fetch('http://localhost:5000/prescription', {
-        method: 'POST',
-        body: formData,
-      });
+        const response = await fetch('http://localhost:5000/checkout/prescription', {
+            method: 'POST',
+            body: formData,
+            headers: {
+              // Remove the Content-Type header if it's being explicitly set elsewhere
+              // 'Content-Type': 'multipart/form-data', 
+          },
+        });
 
-      if (response.ok) {
-        console.log('Form submitted successfully!');
-      } else {
-        console.error('Form submission failed.');
-      }
+        if (response.ok) {
+            console.log('Form submitted successfully!');
+        } else {
+            console.error('Form submission failed.');
+        }
     } catch (error) {
-      console.error('Error submitting form:', error);
+        console.error('Error submitting form:', error);
     }
-  };
+};
 
   return (
     <div className="mx-auto w-full max-w-[550px] bg-white">
@@ -99,21 +108,22 @@ const FileUploadForm = () => {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="email" className="mb-2 block text-base font-medium text-[#07074D]">
-            Additional Details / Query?
-          </label>
-          <input
-            type="number"
-            name="details"
-            id="details"
-            placeholder="Type your message..."
-            value={details}
-            onChange={handledetailsChange}
-            className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-4 md:px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
-          />
-        </div>
+         <div className="w-full">
+             <label htmlFor="Address" className="block mb-3 text-sm font-semibold text-gray-500">Additional Details / Query?</label>
+              <textarea
+               className="w-full px-4 py-3 text-xs border border-gray-300 rounded lg:text-sm focus:outline-none focus:ring-1 focus:ring-blue-600"
+                name="details"
+                id="details"
+                cols={20}
+                rows={4}
+                placeholder="Type your message..."
+                value={details}
+                onChange={handledetailsChange}
+                ></textarea>
+                </div>
+            </div>
 
-        <div className="mb-6 pt-2 md:pt-4">
+        {/* <div className="mb-6 pt-2 md:pt-4">
           <label className="mb-3 block text-xl font-semibold text-[#07074D]">Upload File</label>
 
           <div className="mb-4 md:mb-8">
@@ -155,14 +165,15 @@ const FileUploadForm = () => {
               </div>
             </div>
           )}
-        </div>
+        </div> */}
 
         <div>
           <button
             type="submit"
             className="hover:shadow-form w-full rounded-md bg-blue-500 py-3 px-4 md:px-8 text-center text-base font-semibold text-white outline-none"
           >
-            Send File
+            {/* Send File */}
+            Send Prescription/Query
           </button>
         </div>
       </form>
@@ -174,11 +185,11 @@ const FileUploadForm = () => {
 // Contact component
 const Contact = () => {
     const faqItems = [
-        { question: 'How can I pay for my appointment?', answer: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?' },
-        { question: 'Is the cost of the appointment covered by private health insurance?', answer: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?' },
-        { question: 'Do I need a referral?', answer: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?' },
-        { question: 'What are your opening hours?', answer: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?' },
-        { question: 'What can I expect at my first consultation?', answer: 'Lorem ipsum dolor sit, amet consectetur adipisicing elit. Voluptas eaque nobis, fugit odit omnis fugiat deleniti animi ab maxime cum laboriosam recusandae facere dolorum veniam quia pariatur obcaecati illo ducimus?' },
+        { question: 'How do I place order?', answer: 'Select any product from "Home page" or from the above "Search by Category", choose your desired quantity and respective count, then go to "Cart" and follow "Checkout"' },
+        { question: 'How will payment occur?', answer: 'After you successfully checkout with correct payment details, later in few hours your card will be charge by the name "XYZ" for the respected Total amount  you during checkout' },
+        { question: 'How long will delivery take?', answer: 'The time of delivery is subjected to the choice of your medicine and its availability. Usually it takes up to 14 to18 business days.' },
+        { question: 'How secure is shopping with 1StepCure.com?', answer: 'Shopping at 1StepCure.com is 100% secure and safe as we operate in accordance of the rules laid by better business bureau and other business standards. None of the customer’s private information is held with us or Sold.' },
+        { question: 'What exactly happens after ordering?', answer: 'After placing your order, you will receive an email confirmation, and later, you will receive another email with tracking information' },
     ];
 
     return (

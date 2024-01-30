@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { redirectUser } from '../auth/authHelper';
 
 export default function Checkout() {
     const [isPopupOpen, setPopupOpen] = useState(false);
     const [sameAsShipping, setSameAsShipping] = useState(true);
     const [orderSummary, setOrderSummary] = useState<any>(null);
-
+    const [productOrderDetails, setproductOrderDetails]=useState<any>(null);
     const [creditCardData, setCreditCardData] = useState({
         cardNumber: '',
         cardExpiry: '',
@@ -27,7 +28,9 @@ export default function Checkout() {
             cardNumber: '',
             cardExpiry: '',
             cardCvv: '',
-        }
+        },
+        userOrder:{},
+        Total:0
     });
 
     const handleCreditCardChange = (e: any) => {
@@ -37,57 +40,30 @@ export default function Checkout() {
             [name]: value,
         }));
     };
-
-    const handleFeedbackSubmit = (event: any) => {
+    const closeButton = () =>{
+        redirectUser('/');
+        setPopupOpen(false)
+    }
+    const handleFeedbackSubmit = async (event: any) => {
         event.preventDefault();
-
-        // Assuming you have a separate API endpoint for submitting new feedback
-        const apiUrl = "https://your-backend-api/new-feedback";
-
-        // Create a feedback object with the input data
         const newFeedbackData = {
             feedback: event.target.newFeedback.value,
-            // Add other relevant data if needed
+            feedbackSenderData: {
+                firstName: formData.firstName,
+                lastName: formData.lastName,
+                email: formData.email
+            }
         };
-
-        // Send the new feedback data to the backend
-        fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newFeedbackData),
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log("New Feedback submitted successfully:", data);
-                // You can handle the response from the backend if needed
-            })
-            .catch(error => {
-                console.error("Error submitting new feedback:", error);
-                // Handle errors if needed
-            });
-        setPopupOpen(false)
-    };
-
-
-    const handleSubmit = async (event: any) => {
-        console.log("hello00")
-        event.preventDefault();
-        formData.creditCardDetails = creditCardData
-        console.log(JSON.stringify(formData));
-        setPopupOpen(true);
-       
         try {
-            const sendOrder = await fetch("http://localhost:5000/checkout", {
+            const sendFeedBack = await fetch("http://localhost:5000/checkout/feedBack", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 credentials: 'include',
-                body: JSON.stringify(formData),
+                body: JSON.stringify(newFeedbackData),
             });
-            if(sendOrder){
+            if(sendFeedBack){
                 console.log("perfect")
                 console.log("Response")
             }   
@@ -95,12 +71,54 @@ export default function Checkout() {
         }catch (err){
             console.log(err)
         }
+        redirectUser('/');
+        setPopupOpen(false);
+    };
+
+
+    const handleSubmit = async (event: any) => {
+        event.preventDefault();
+        const requiredFields = ["firstName", "lastName", "email", "address", "creditCardDetails.cardNumber", "creditCardDetails.cardExpiry", "creditCardDetails.cardCvv", "creditCardDetails.nameOnCard"];
+        const emptyFields = requiredFields.filter(field => {
+            const fieldValue = field.includes('creditCardDetails') ? creditCardData[field.split('.')[1]] : formData[field];
+            return !fieldValue;
+        });
+        
+        if (emptyFields.length > 0) {
+            alert(`Please fill in the following fields: ${emptyFields.join(', ')}`);
+            return;
+        }
+        formData.creditCardDetails = creditCardData;
+        formData.userOrder = productOrderDetails
+        formData.Total = orderSummary.total;
+        console.log(JSON.stringify(formData));
+        if(formData.Total > 25){
+            setPopupOpen(true);
+            try {
+                const sendOrder = await fetch("http://localhost:5000/checkout", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(formData),
+                });
+                if(sendOrder){
+                    console.log("perfect")
+                    console.log("Response")
+                }   
+    
+            }catch (err){
+                console.log(err)
+            }
+        }else{
+            alert("Cart Emtpy")
+            return;
+        }
     };
 
     const handleCheckboxChange = () => {
         setSameAsShipping(!sameAsShipping);
-        
-        
     };
 
     const handleInputChange = (e: any) => {
@@ -130,7 +148,17 @@ export default function Checkout() {
                         price: calculateProductPrice(product.totalQty),
                         totalQty: product.totalQty,
                     }));
-    
+                    const userOrder = usercart.map((product: any) => ({
+                        name: product.product_id.productName,
+                        packs: product.totalQty.map((pack: any) => ({
+                          size: pack.quantity.toString(),
+                          quantity: pack.count,
+                          price: pack.cost
+                        })),
+                      }));
+                      setproductOrderDetails(userOrder);
+                      console.log("userOrderrr");
+                      console.log(userOrder);
                     const subtotal = transformedCart.reduce((acc: number, item: any) => acc + item.price, 0);
                     const shippingTax = 25.00; // Assuming this is a fixed value
                     const total = subtotal + shippingTax;
@@ -146,15 +174,10 @@ export default function Checkout() {
                 console.log("logic error", err);
             }
         };
-    
         fetchFinalProducts();
-    
-        // Update billingAddress in formData if sameAsShipping is true
-
-    }, []); // Run this effect only once when the component mounts
-
+    }, []); 
     useEffect(() => {
-        if (sameAsShipping) { // Check if formData.address is not empty
+        if (sameAsShipping) { 
             setFormData(prevData => ({
                 ...prevData,
                 billingAddress: prevData.address,
@@ -163,7 +186,7 @@ export default function Checkout() {
         if (!sameAsShipping) {
             setFormData(prevData => ({
                 ...prevData,
-                billingAddress: "", // Set billingAddress to an empty string
+                billingAddress: "",
             }));
         }
     },[formData.address,sameAsShipping]);
@@ -173,12 +196,10 @@ export default function Checkout() {
     
         // Iterate over each item in the totalQty array
         totalQty.forEach((item: any, index: number) => {
-            console.log(`Item ${index + 1}:`, item); // Log each item to inspect its structure
             // Multiply the quantity by the cost for each item and add it to the totalPrice
             totalPrice += item.count * item.cost;
         });
     
-        console.log("Total Price:", totalPrice); // Log the totalPrice after all calculations
     
         return totalPrice;
     };
@@ -312,18 +333,20 @@ export default function Checkout() {
                                 />
                             </div>
                             <div className="w-full">
-    <label htmlFor="nameOnCard" className="block text-sm font-semibold text-gray-500">
-        Name on Card
-    </label>
-    <input
-        name="nameOnCard"
-        type="text"
-        placeholder="Name on Card"
-        className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
-        onChange={handleCreditCardChange}
-    />
-</div>
+                                        <label htmlFor="nameOnCard" className="block text-sm font-semibold text-gray-500">
+                                            Name on Card
+                                        </label>
+                                        <input
+                                            name="nameOnCard"
+                                            type="text"
+                                            placeholder="Name on Card"
+                                            className="w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
+                                            onChange={handleCreditCardChange}
+                                        />
+                                    </div>
+                                   
                         </div>
+                        <p>*Your card will be charged by 1StepCure for the above amount</p>
                         <div className="relative pt-3 xl:pt-6">
                             <label htmlFor="note" className="block mb-3 text-sm font-semibold text-gray-500"> Notes (Optional)</label>
                             <textarea
@@ -392,9 +415,9 @@ export default function Checkout() {
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
                     <div className="bg-white p-8 rounded-md">
                         <p className="text-xl font-bold mb-4">Submission Successful!</p>
-                        <p>Your data has been submitted successfully.</p>
+                        <p>Your data has been submitted successfully, Soon you will receive an email.</p>
                         <form onSubmit={handleFeedbackSubmit}>
-                            <label htmlFor="newFeedback" className="block mb-3 text-sm font-semibold text-gray-500">New Feedback</label>
+                            <label htmlFor="newFeedback" className="block mb-3 text-sm font-semibold text-gray-500">Any Feedback? We would love to here from you!</label>
                             <textarea
                                 name="newFeedback"
                                 className="flex items-center w-full px-4 py-3 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-600"
@@ -403,7 +426,7 @@ export default function Checkout() {
                             ></textarea>
                             <div className='flex justify-between'>
                                 <button type="submit" className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Submit New Feedback</button>
-                                <button onClick={() => setPopupOpen(false)} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
+                                <button onClick={closeButton} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
                             </div>
                         </form>
 
