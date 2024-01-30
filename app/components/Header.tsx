@@ -19,15 +19,9 @@ const Header = () => {
 
   useEffect(() => {
     checkAuthentication().then((res: any) => {
-      console.log("ressss")
-      console.log(res);
       if (res) {
-        console.log("liveChangessWorking")
-        console.log("loggedinnnnnn")
         setState((prev) => ({ ...prev, isLoggedIn: true }));
       } else {
-        console.log("liveChangessNotttWorking")
-        console.log("logggoutttt")
         setState((prev) => ({ ...prev, isLoggedIn: false })); 
       }
     });

@@ -1,14 +1,18 @@
-'use server'
+'use client'
 
-import { cookies } from 'next/headers';
+import { destroyCookie, parseCookies } from 'nookies';
+import { redirectUser } from '../auth/authHelper';
 
 const TOKEN_NAME = 'ftune';
 
 export const logout = () => {
-  cookies().delete(TOKEN_NAME)
+  destroyCookie(null, TOKEN_NAME); // Use destroyCookie from nookies to delete the cookie
+  redirectUser("/auth/login");
   return true;
 };
 
 export const checkAuthentication = async () => {
-  return Promise.resolve(!!cookies().get(TOKEN_NAME));
+  const cookies = parseCookies(); // Use parseCookies from nookies to get cookies
+
+  return !!cookies[TOKEN_NAME];
 };
