@@ -17,7 +17,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchFinalProducts = async () => {
       try {
-        const response = await fetch("http://localhost:5000/cart", {
+        const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function Cart() {
         }];
         // console.log("cartDetails")
         // console.log(JSON.stringify(cartDetails));
-        const response = await fetch("http://localhost:5000/cart", {
+        const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -146,7 +146,7 @@ export default function Cart() {
       }];
         // console.log("cartDetails")
         // console.log(JSON.stringify(cartDetails));
-        const response = await fetch("http://localhost:5000/cart", {
+        const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -197,7 +197,7 @@ const subtractQty = async (productId: any, quantity: any) => {
       }];
       // console.log("cartDetails")
       // console.log(JSON.stringify(cartDetails));
-      const response = await fetch("http://localhost:5000/cart", {
+      const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

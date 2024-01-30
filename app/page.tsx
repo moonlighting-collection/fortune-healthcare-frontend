@@ -8,7 +8,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5000/product')
+    fetch('https://navy-blue-dibbler-boot.cyclic.app/product')
       .then((response) => response.json())
       .then((data) => setProducts(data.products))
       .catch((error) => console.error('Error fetching products:', error));

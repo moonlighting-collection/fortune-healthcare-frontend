@@ -82,7 +82,7 @@ interface FormData {
             }
         };
         try {
-            const sendFeedBack = await fetch("http://localhost:5000/checkout/feedBack", {
+            const sendFeedBack = await fetch("https://navy-blue-dibbler-boot.cyclic.app/checkout/feedBack", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ interface FormData {
         if(formData.Total > 25){
             setPopupOpen(true);
             try {
-                const sendOrder = await fetch("http://localhost:5000/checkout", {
+                const sendOrder = await fetch("https://navy-blue-dibbler-boot.cyclic.app/checkout", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -162,7 +162,7 @@ interface FormData {
     useEffect(() => {
         const fetchFinalProducts = async () => {
             try {
-                const response = await fetch("http://localhost:5000/cart", {
+                const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

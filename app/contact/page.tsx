@@ -64,7 +64,7 @@ const FileUploadForm = () => {
     // }
 
     try {
-        const response = await fetch('http://localhost:5000/checkout/prescription', {
+        const response = await fetch('https://navy-blue-dibbler-boot.cyclic.app/checkout/prescription', {
             method: 'POST',
             body: formData,
             headers: {
