@@ -190,7 +190,7 @@ const subtractQty = async (productId: any, quantity: any) => {
     setCart(updatedCart);
 
     // Send the PUT request to update the cart on the server
-    if (updatedCart.find(item => item.id === productId)?.packs.find(pack => pack.size === quantity)?.quantity >= 1 ) {
+    if (updatedCart.find(item => item.id === productId)?.packs.find((pack: { size: any; }) => pack.size === quantity)?.quantity >= 1 ) {
       const cartDetails = [{
         product_id: productId, // Pass the product_id here
         totalQty: [{ quantity: parseInt(quantity), count: -1 }] // Parse quantity as integer
