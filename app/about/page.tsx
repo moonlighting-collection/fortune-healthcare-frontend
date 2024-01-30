@@ -3,8 +3,8 @@ export default function About() {
         <section className="text-gray-600 body-font">
             <div className="container px-5 py-24 mx-auto">
                 <div className="text-center mb-20">
-                    <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900 mb-4">Raw Denim Heirloom Man Braid</h1>
-                    <p className="text-base leading-relaxed xl:w-2/4 lg:w-3/4 mx-auto text-gray-500s">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine, ramps microdosing banh mi pug.</p>
+                    <h1 className="sm:text-3xl text-2xl font-medium title-font text-gray-900 mb-4">Welcome to 1StepCure - Your Trusted Source for Quality Medicines</h1>
+                    <p className="text-base leading-relaxed xl:w-2/4 lg:w-3/4 mx-auto text-gray-500s">At 1StepCure, we are dedicated to providing you with access to high-quality medicines and healthcare products from the comfort of your home. As a leading online pharmacy, we strive to make healthcare accessible and affordable for everyone.</p>
                     <div className="flex mt-6 justify-center">
                         <div className="w-16 h-1 rounded-full bg-blue-500 inline-flex"></div>
                     </div>
@@ -17,32 +17,21 @@ export default function About() {
                             </svg>
                         </div>
                         <div className="flex-grow">
-                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">Shooting Stars</h2>
-                            <p className="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine, ramps microdosing banh mi pug VHS try-hard.</p>
-                            <a className="mt-3 text-blue-500 inline-flex items-center">Learn More
-                                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
+                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">Our Commitment to Quality</h2>
+                            <p className="leading-relaxed text-base">We understand the importance of trust when it comes to healthcare. That's why we go above and beyond to ensure that all the products available on our platform are sourced from reputable manufacturers and adhere to strict quality standards.</p>
                         </div>
                     </div>
                     <div className="p-4 md:w-1/3 flex flex-col text-center items-center">
-                        <div className="w-20 h-20 inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-5 flex-shrink-0">
-                            <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-10 h-10" viewBox="0 0 24 24">
-                                <circle cx="6" cy="6" r="3"></circle>
-                                <circle cx="6" cy="18" r="3"></circle>
-                                <path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"></path>
-                            </svg>
-                        </div>
+                    <div className="w-20 h-20 inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-5 flex-shrink-0">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-10 h-10" viewBox="0 0 24 24">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+    </svg>
+</div>
+
                         <div className="flex-grow">
-                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">The Catalyzer</h2>
-                            <p className="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine, ramps microdosing banh mi pug VHS try-hard.</p>
-                            <a className="mt-3 text-blue-500 inline-flex items-center">Learn More
-                                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
-                        </div>
+                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">Our Mission</h2>
+                            <p className="leading-relaxed text-base">Our mission at 1StepCure is simple yet profound - to improve the health and well-being of our customers by offering a wide range of medicines and healthcare essentials at competitive prices.</p>                        
+                            </div>
                     </div>
                     <div className="p-4 md:w-1/3 flex flex-col text-center items-center">
                         <div className="w-20 h-20 inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-5 flex-shrink-0">
@@ -52,13 +41,8 @@ export default function About() {
                             </svg>
                         </div>
                         <div className="flex-grow">
-                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">Neptune</h2>
-                            <p className="leading-relaxed text-base">Blue bottle crucifix vinyl post-ironic four dollar toast vegan taxidermy. Gastropub indxgo juice poutine, ramps microdosing banh mi pug VHS try-hard.</p>
-                            <a className="mt-3 text-blue-500 inline-flex items-center">Learn More
-                                <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" className="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                </svg>
-                            </a>
+                            <h2 className="text-gray-900 text-lg title-font font-medium mb-3">Get Started Today</h2>
+                            <p className="leading-relaxed text-base">Experience the convenience of online shopping for healthcare products with 1StepCure. Browse our extensive catalog, place your order with confidence, and let us take care of the rest. Your health is our priority, and we are here to support you every step of the way.</p>
                         </div>
                     </div>
                 </div>
