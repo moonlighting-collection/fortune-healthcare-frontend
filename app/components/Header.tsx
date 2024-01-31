@@ -21,6 +21,7 @@ const Header = () => {
   }
 
   useEffect(() => {
+    console.log(cookies.get(TOKEN_NAME))
     if (cookies.get(TOKEN_NAME)) {
       setState((prev) => {
         return ({ ...prev, isLoggedIn: true })
