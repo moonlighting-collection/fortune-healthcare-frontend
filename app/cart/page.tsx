@@ -18,8 +18,11 @@ export default function Cart() {
 
   // Fetch cart data from the server
   useEffect(() => {
+    console.log("useeffect")
     const fetchFinalProducts = async () => {
+      console.log("before tryyy")
       try {
+        console.log("inside finalfetch")
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
           method: "GET",
           headers: {
@@ -30,7 +33,12 @@ export default function Cart() {
             ftune : cookies.get(TOKEN_NAME)
           })
         });
+        console.log("afterr call", JSON.stringify({
+          ftune : cookies.get(TOKEN_NAME)
+        }))
         if (response.ok) {
+          console.log("cart okkkkk")
+
           const usercart = await response.json();
           // Transform the received cart data into the expected format
           const transformedCart = usercart.map((product: any) => ({
