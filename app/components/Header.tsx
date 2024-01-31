@@ -20,7 +20,7 @@ const Header = () => {
   useEffect(() => {
     checkAuthentication().then((res: any) => {
         setState((prev) => {
-          return ({ ...prev, isLoggedIn: true })
+          return ({ ...prev, isLoggedIn: res })
         });
     })
   }, []);
