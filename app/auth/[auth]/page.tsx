@@ -55,7 +55,7 @@ export default function Auth({ params }: any) {
             return;
         }
 
-        const apiUrl = 'https://navy-blue-dibbler-boot.cyclic.app/auth';
+        const apiUrl = `${process.env.NEXT_PUBLIC_API_URI}/auth`;
 
         const requestBody: any = {
             email: formData.email,

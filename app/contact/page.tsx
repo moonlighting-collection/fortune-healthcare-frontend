@@ -64,7 +64,7 @@ const FileUploadForm = () => {
     // }
 
     try {
-        const response = await fetch('https://navy-blue-dibbler-boot.cyclic.app/checkout/prescription', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/checkout/prescription`, {
             method: 'POST',
             body: formData,
             headers: {

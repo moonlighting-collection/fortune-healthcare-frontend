@@ -84,7 +84,7 @@ interface FormData {
             }
         };
         try {
-            const sendFeedBack = await fetch("https://navy-blue-dibbler-boot.cyclic.app/checkout/feedBack", {
+            const sendFeedBack = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/checkout/feedBack`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -128,7 +128,7 @@ interface FormData {
         if(formData.Total > 25){
             setPopupOpen(true);
             try {
-                const sendOrder = await fetch("https://navy-blue-dibbler-boot.cyclic.app/checkout", {
+                const sendOrder = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/checkout`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -141,7 +141,7 @@ interface FormData {
                 }   
     
             }catch (err){
-                console.log(err)
+                // console.log(err)
             }
         }else{
             alert("Cart Emtpy")
@@ -164,7 +164,7 @@ interface FormData {
     useEffect(() => {
         const fetchFinalProducts = async () => {
             try {
-                const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -202,7 +202,7 @@ interface FormData {
                     });
                 }
             } catch (err) {
-                console.log("logic error", err);
+                // console.log("logic error", err);
             }
         };
         fetchFinalProducts();

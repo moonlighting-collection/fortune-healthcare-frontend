@@ -35,7 +35,7 @@ export default function Product({ params }: any) {
        
         try {
             // Send the PUT request to update the cart on the server
-            const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -74,7 +74,7 @@ export default function Product({ params }: any) {
     
         try {
             // Send the PUT request to update the cart on the server
-            const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -98,13 +98,13 @@ export default function Product({ params }: any) {
         const fetchProductData = async () => {
             try {
                 const searchParam = searchParams.get('product');
-                const response = await fetch(`https://navy-blue-dibbler-boot.cyclic.app/product?product=${searchParam}`);
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/product?product=${searchParam}`);
                 let loginUserCartDataQty: any[] = []; // Initialize as an empty array
                 const data = await response.json();
                 setProductData(data.products[0]);
                 if (response.ok && state.isLoggedIn) { // Check if user is logged in
                     try {
-                        const response = await fetch("https://navy-blue-dibbler-boot.cyclic.app/cart", {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",

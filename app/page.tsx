@@ -8,7 +8,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    fetch('https://navy-blue-dibbler-boot.cyclic.app/product')
+    fetch(`${process.env.NEXT_PUBLIC_API_URI}/product`)
       .then((response) => response.json())
       .then((data) => setProducts(data.products))
       .catch((error) => console.error('Error fetching products:', error));
@@ -30,7 +30,7 @@ export default function Home() {
             <p className="mb-8 leading-relaxed font-semibold font-sans">
             Welcome to 1StepCure, your trusted online destination for premium healthcare medicines. 
             Discover a curated selection of top-quality medicines along with our expert guidance and convenient delivery.
-            <p> Take the first step towards a healthier, happier you!</p>
+            <span> Take the first step towards a healthier, happier you!</span>
             </p>
             <div className="flex w-full justify-center items-end">
               <div className="relative mr-4 w-full xl:w-1/2 md:w-full text-center md:text-left">
@@ -85,6 +85,7 @@ export default function Home() {
                             alt={product.productName}
                             width={722}
                             height={402}
+                            priority
                         />
                       
                   <div className="p-6">

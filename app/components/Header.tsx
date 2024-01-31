@@ -19,14 +19,11 @@ const Header = () => {
 
   useEffect(() => {
     checkAuthentication().then((res: any) => {
-      if (res) {
-        setState((prev) => ({ ...prev, isLoggedIn: true }));
-      }
-      //  else {
-      //   setState((prev) => ({ ...prev, isLoggedIn: false })); 
-      // }
-    });
-  }, []); 
+        setState((prev) => {
+          return ({ ...prev, isLoggedIn: true })
+        });
+    })
+  }, []);
 
   return (
     <header className="text-gray-800 body-font">

@@ -11,7 +11,7 @@ export default function Category({ params }: any) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`https://navy-blue-dibbler-boot.cyclic.app/product?category=${decodeURIComponent(params.category)}`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/product?category=${decodeURIComponent(params.category)}`);
         const data = await response.json();
         setCategoryData(data.products);
       } catch (error) {
