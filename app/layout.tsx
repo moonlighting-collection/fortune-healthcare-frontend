@@ -4,6 +4,7 @@ import './globals.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { GlobalStateProvider } from './globalstatecontext'
+import { CookiesProvider } from 'next-client-cookies/server';
 // import { NotificationProvider } from './notificationcontext'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -18,11 +19,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body className={inter.className}>
         {/* <NotificationProvider> */}
+        <CookiesProvider>
           <GlobalStateProvider>
             <Header />
             {children}
             <Footer />
           </GlobalStateProvider>
+        </CookiesProvider>
         {/* </NotificationProvider> */}
       </body>
     </html>

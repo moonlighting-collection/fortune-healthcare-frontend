@@ -3,10 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useGlobalState } from '../globalstatecontext';
-import { checkAuthentication, logout } from '@/app/helpers/auth'
 import { redirectUser } from '../auth/authHelper';
+import { useCookies } from 'next-client-cookies';
 
 const Header = () => {
+
+  const TOKEN_NAME = 'ftune';
+  const cookies = useCookies();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const { state, setState } = useGlobalState();
 
@@ -18,12 +21,18 @@ const Header = () => {
   }
 
   useEffect(() => {
-    checkAuthentication().then((res: any) => {
-        setState((prev) => {
-          return ({ ...prev, isLoggedIn: res })
-        });
-    })
-  }, []);
+    if (cookies.get(TOKEN_NAME)) {
+      setState((prev) => {
+        return ({ ...prev, isLoggedIn: true })
+      });
+    }
+  }, [cookies.get(TOKEN_NAME)]);
+
+  const logout = () => {
+    cookies.remove(TOKEN_NAME);
+    redirectUser("/auth/login");
+    return true;
+  };
 
   return (
     <header className="text-gray-800 body-font">
@@ -100,8 +109,8 @@ const Header = () => {
                         <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">PARASITIC INFECTIONS</label>
                       </div>
                     </li>
-                    </Link>
-                     {/* <Link href="">
+                  </Link>
+                  {/* <Link href="">
                     <li onClick={handleDropdownClick}>
                       <div className="flex items-center rounded hover:bg-gray-100 dark:hover:bg-gray-600">
                         <label className="w-full py-2 text-sm font-medium text-gray-900 rounded dark:text-gray-300">COMMING SOON</label>
