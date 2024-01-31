@@ -77,6 +77,8 @@ export default function Auth({ params }: any) {
             });
 
             if (response.ok) {
+                const { ftune } = await response.json();
+                document.cookie = `ftune=${ftune}; Secure; SameSite=None`;
                 if (params.auth === 'login') {
                     setState((prev) => ({ ...prev, isLoggedIn: true }));
                     setIsAuthenticated(true); // Signal that authentication is complete
