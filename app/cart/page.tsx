@@ -23,7 +23,7 @@ export default function Cart() {
       console.log("before tryyy")
       try {
         console.log("inside finalfetch")
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart?${cookies.get(TOKEN_NAME)}`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart?ftune=${cookies.get(TOKEN_NAME)}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

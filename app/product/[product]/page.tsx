@@ -113,7 +113,7 @@ export default function Product({ params }: any) {
                 if (response.ok && state.isLoggedIn) { // Check if user is logged in
                     try {
                         console.log("inside try get prod")
-                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart?${cookies.get(TOKEN_NAME)}`, {
+                        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart?ftune=${cookies.get(TOKEN_NAME)}`, {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",
