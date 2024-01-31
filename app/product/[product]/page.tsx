@@ -5,9 +5,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from 'next/navigation'
 import { redirectUser } from "@/app/auth/authHelper";
 import { useGlobalState } from "@/app/globalstatecontext";
+import { useCookies } from 'next-client-cookies';
 
 
 export default function Product({ params }: any) {
+    const TOKEN_NAME = 'ftune';
+    const cookies = useCookies();
 
     const [cart, setCart] = useState<any>({});
     const { state } = useGlobalState();
@@ -43,7 +46,7 @@ export default function Product({ params }: any) {
                     "Content-Type": "application/json",
                 },
                 credentials: 'include',
-                body: JSON.stringify({ cartDetails }),
+                body: JSON.stringify({  ftune: cookies.get(TOKEN_NAME),cartDetails }),
             });
     
             if (!response.ok) {
@@ -75,26 +78,27 @@ export default function Product({ params }: any) {
         }];
     
         try {
-            console.log(document.cookie)
-
-            // Send the PUT request to update the cart on the server
+            
+            console.log("inside try product")
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: 'include',
-                body: JSON.stringify({ cartDetails }),
+                body: JSON.stringify({ ftune: cookies.get(TOKEN_NAME), cartDetails }),
             });
     
             if (!response.ok) {
+                            console.log("inside ok Pro")
+
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
     
             const updatedData = await response.json();
            // console.log("Cart updated successfully:", updatedData);
         } catch (error) {
-           // console.error("Error updating cart:", error);
+           console.error("Error updating cart:", error);
         }
     };
 
@@ -108,15 +112,21 @@ export default function Product({ params }: any) {
                 setProductData(data.products[0]);
                 if (response.ok && state.isLoggedIn) { // Check if user is logged in
                     try {
-                        console.log(document.cookie)
+                        console.log("inside try get prod")
                         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                             method: "GET",
                             headers: {
                                 "Content-Type": "application/json",
                             },
-                            credentials: 'include',
+                            // credentials: 'include',
+                            body: JSON.stringify({
+                              ftune: cookies.get(TOKEN_NAME)
+                            })
+                            
                         });
                         if (response.ok) {
+                            console.log("okkkk inside try get prod")
+
                             const usercart = await response.json();
                             for (const item of usercart) {
                                 if (item.product_id._id === searchParam) {
@@ -126,7 +136,7 @@ export default function Product({ params }: any) {
                             }
                         }
                     } catch (err) {
-                     //   console.log("logic error", err);
+                      console.log("logic error", err);
                     }
                 }
                 const newCart = data.products.reduce((acc: any, item: any) => {

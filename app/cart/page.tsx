@@ -56,7 +56,7 @@ export default function Cart() {
           // console.log(JSON.stringify(transformedCart));
         }
       } catch (err) {
-        // console.log("logic error", err);
+         console.log("logic error", err);
       }
     }
     // console.log("Cart Length:", cart.length);
