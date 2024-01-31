@@ -29,9 +29,7 @@ export default function Cart() {
             "Content-Type": "application/json",
           }
         });
-        console.log("afterr call", JSON.stringify({
-          ftune: cookies.get(TOKEN_NAME)
-        }))
+       
         if (response.ok) {
           console.log("cart okkkkk")
 
@@ -160,7 +158,6 @@ export default function Cart() {
       }];
       // console.log("cartDetails")
       // console.log(JSON.stringify(cartDetails));
-      console.log(document.cookie)
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
         method: "PUT",
@@ -168,7 +165,10 @@ export default function Cart() {
           "Content-Type": "application/json",
         },
         credentials: 'include',
-        body: JSON.stringify({ cartDetails }),
+        body: JSON.stringify({
+          ftune: cookies.get(TOKEN_NAME),
+          cartDetails
+        }),
       });
 
       if (!response.ok) {
@@ -221,7 +221,10 @@ export default function Cart() {
             "Content-Type": "application/json",
           },
           credentials: 'include',
-          body: JSON.stringify({ cartDetails }),
+          body: JSON.stringify({
+            ftune: cookies.get(TOKEN_NAME),
+            cartDetails
+          }),
         });
 
         if (!response.ok) {

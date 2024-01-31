@@ -2,8 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { redirectUser } from '../auth/authHelper';
+import { useCookies } from 'next-client-cookies';
+
 
 export default function Checkout() {
+    const TOKEN_NAME = 'ftune';
+    const cookies = useCookies();
     const [isPopupOpen, setPopupOpen] = useState(false);
     const [sameAsShipping, setSameAsShipping] = useState(true);
     const [orderSummary, setOrderSummary] = useState<any>(null);
@@ -164,9 +168,8 @@ interface FormData {
     useEffect(() => {
         const fetchFinalProducts = async () => {
             try {
-                console.log(document.cookie)
 
-                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart?ftune=${cookies.get(TOKEN_NAME)}`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
