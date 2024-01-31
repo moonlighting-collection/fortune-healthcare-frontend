@@ -5,10 +5,13 @@ import Link from 'next/link';
 import { useEffect, useState } from "react";
 import { redirectUser } from "@/app/auth/authHelper";
 import { useGlobalState } from "@/app/globalstatecontext";
+import { useCookies } from 'next-client-cookies';
 
 // Define the Cart component
 export default function Cart() {
   // Initialize state variables
+  const TOKEN_NAME = 'ftune';
+  const cookies = useCookies();
   const [cart, setCart] = useState<any[]>([]);
   const [isRemoveAllQtyCalled, setIsRemoveAllQtyCalled] = useState(false);
   const { state } = useGlobalState();
@@ -17,13 +20,15 @@ export default function Cart() {
   useEffect(() => {
     const fetchFinalProducts = async () => {
       try {
-        console.log(document.cookie)
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: 'include',
+          // credentials: 'include',
+          body: JSON.stringify({
+            ftune : cookies.get(TOKEN_NAME)
+          })
         });
         if (response.ok) {
           const usercart = await response.json();
