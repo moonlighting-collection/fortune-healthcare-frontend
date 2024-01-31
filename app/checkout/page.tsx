@@ -164,6 +164,8 @@ interface FormData {
     useEffect(() => {
         const fetchFinalProducts = async () => {
             try {
+                console.log(document.cookie)
+
                 const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                     method: "GET",
                     headers: {

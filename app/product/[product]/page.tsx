@@ -34,6 +34,8 @@ export default function Product({ params }: any) {
         }];
        
         try {
+            console.log(document.cookie)
+
             // Send the PUT request to update the cart on the server
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                 method: "PUT",
@@ -73,6 +75,8 @@ export default function Product({ params }: any) {
         }];
     
         try {
+            console.log(document.cookie)
+
             // Send the PUT request to update the cart on the server
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                 method: "PUT",
@@ -104,6 +108,7 @@ export default function Product({ params }: any) {
                 setProductData(data.products[0]);
                 if (response.ok && state.isLoggedIn) { // Check if user is logged in
                     try {
+                        console.log(document.cookie)
                         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
                             method: "GET",
                             headers: {

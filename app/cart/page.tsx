@@ -17,6 +17,7 @@ export default function Cart() {
   useEffect(() => {
     const fetchFinalProducts = async () => {
       try {
+        console.log(document.cookie)
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
           method: "GET",
           headers: {
@@ -87,6 +88,7 @@ export default function Cart() {
         }];
         // console.log("cartDetails")
         // console.log(JSON.stringify(cartDetails));
+        
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
           method: "PUT",
           headers: {
@@ -146,6 +148,8 @@ export default function Cart() {
       }];
         // console.log("cartDetails")
         // console.log(JSON.stringify(cartDetails));
+        console.log(document.cookie)
+
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
             method: "PUT",
             headers: {
@@ -197,6 +201,8 @@ const subtractQty = async (productId: any, quantity: any) => {
       }];
       // console.log("cartDetails")
       // console.log(JSON.stringify(cartDetails));
+      console.log(document.cookie)
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/cart`, {
         method: "PUT",
         headers: {
