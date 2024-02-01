@@ -70,23 +70,26 @@ export default function Home() {
                 </span>
               </button>
             </div>
-            <div className="flex w-full justify-center items-end">
-              <div className="relative mr-4 w-full xl:w-1/2 md:w-full text-center md:text-left">
-                <label htmlFor="hero-field" className="leading-7 text-sm text-gray-600">
-                  Search Products
-                </label>
-                <input
-                  type="text"
-                  id="hero-field"
-                  name="hero-field"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Type to search..."
-                  className="w-full bg-gray-100 bg-opacity-50 rounded focus:ring-2 focus:ring-blue-200 focus:bg-transparent border border-gray-300 focus:border-blue-500 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
-                />
-              </div>
-            </div>
-            <p className="mt-1 leading-relaxed font-semibold font-sans">
+            <div className="flex flex-col items-center w-full justify-center">
+  <div className="mb-2 text-lg font-bold text-blue-700">
+    Call us directly to get <span className="text-yellow-500">BETTER PRICES</span>
+  </div>
+  <div className="relative mr-4 w-full xl:w-1/2 md:w-full text-center md:text-left">
+    <label htmlFor="hero-field" className="leading-7 text-sm text-gray-600">
+      Search Products
+    </label>
+    <input
+      type="text"
+      id="hero-field"
+      name="hero-field"
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      placeholder="Type to search..."
+      className="w-full bg-gray-100 bg-opacity-50 rounded focus:ring-2 focus:ring-blue-200 focus:bg-transparent border border-gray-300 focus:border-blue-500 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+    />
+  </div>
+</div>
+       <p className="mt-1 leading-relaxed font-semibold font-sans">
               Explore some of our extensive range below today!
             </p>
 
