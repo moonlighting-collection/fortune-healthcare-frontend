@@ -10,7 +10,7 @@ import { CookiesProvider } from 'next-client-cookies/server';
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Fortune Health Care',
+  title: '1StepCure',
   description: 'Health Care Website',
 }
 
