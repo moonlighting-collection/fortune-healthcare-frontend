@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 // FAQItem component
 const FAQItem = ({ question, answer }: any) => {
     const [isOpen, setIsOpen] = useState(false);
-
+  
     const toggleOpen = () => {
         setIsOpen(!isOpen);
     };
@@ -37,14 +37,24 @@ const FAQItem = ({ question, answer }: any) => {
 const FileUploadForm = () => {
   const [email, setEmail] = useState('');
   const [details, setdetails] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [file, setFile] = useState<File | null>(null);
-
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const closeButton = () =>{
+        setPopupOpen(false)
+        setPhoneNumber('')
+        setdetails('')
+        setEmail('')
+    }
   const handleEmailChange = (e: any) => {
     setEmail(e.target.value);
   };
 
   const handledetailsChange = (e: any) => {
     setdetails(e.target.value);
+  };
+  const phoneNumberChange = (e: any) => {
+    setPhoneNumber(e.target.value);
   };
 
   const handleFileChange = (e: any) => {
@@ -59,11 +69,13 @@ const FileUploadForm = () => {
     const formData = new FormData();
     formData.append('email', email);
     formData.append('details', details);
+    formData.append('phoneNumber', phoneNumber);
     // if (file) {
     //     formData.append('file', file);
     // }
 
     try {
+      setPopupOpen(true);
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/checkout/prescription`, {
             method: 'POST',
             body: formData,
@@ -98,6 +110,20 @@ const FileUploadForm = () => {
             placeholder="example@domain.com"
             value={email}
             onChange={handleEmailChange}
+            className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-4 md:px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="email" className="mb-2 block text-base font-medium text-[#07074D]">
+            Contact Number:
+          </label>
+          <input
+            type="text"
+            name="phoneNumber"
+            id="phoneNumber"
+            placeholder="+1 "
+            value={phoneNumber}
+            onChange={phoneNumberChange}
             className="w-full rounded-md border border-[#e0e0e0] bg-white py-3 px-4 md:px-6 text-base font-medium text-[#6B7280] outline-none focus:border-[#6A64F1] focus:shadow-md"
           />
         </div>
@@ -172,14 +198,28 @@ const FileUploadForm = () => {
           </button>
         </div>
       </form>
-    </div>
+      {isPopupOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10">
+                    <div className="bg-white p-8 rounded-md">
+                        <p className="text-xl font-bold mb-4">Submission Successful!</p>
+                        <p>Your query has been submitted successfully, we'll get back to you shortly.</p>
+                        <form >
+                            <div className='flex justify-between'>
+                                <button onClick={closeButton} className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md">Close</button>
+                            </div>
+                        </form>
+
+                    </div>
+                </div>
+            )}
+    </div> 
   );
 };
 
 
 // Contact component
 const Contact = () => {
-    const faqItems = [
+     const faqItems = [
         { question: 'How do I place order?', answer: 'Select any product from "Home page" or from the above "Search by Category", choose your desired quantity and respective count, then go to "Cart" and follow "Checkout"' },
         { question: 'How will payment occur?', answer: 'After you successfully checkout with correct payment details, later in few hours your card will be charge by the name "XYZ" for the respected Total amount  you during checkout' },
         { question: 'How long will delivery take?', answer: 'The time of delivery is subjected to the choice of your medicine and its availability. Usually it takes up to 14 to18 business days.' },
@@ -202,7 +242,7 @@ const Contact = () => {
             <div className="w-full md:w-1/2 lg:w-1/3">
                 <FileUploadForm />
             </div>
-        </section>
+                    </section>
     );
 };
 
