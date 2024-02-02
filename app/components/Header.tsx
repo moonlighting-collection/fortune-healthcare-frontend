@@ -58,7 +58,7 @@ const Header = () => {
         <nav className="md:ml-auto flex flex-col gap-5 md:gap-0 md:flex-row items-center text-base justify-center">
           <div className='flex gap-4 px-10'>
             <Link href='/about'>
-              <p className="hover:text-gray-900">About</p>
+              <p className="hover:text-gray-900">Track | About</p>
             </Link>
             <Link href='/contact'>
               <p className="hover:text-gray-900">Contact</p>
