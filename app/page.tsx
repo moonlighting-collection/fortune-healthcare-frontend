@@ -126,21 +126,23 @@ export default function Home() {
                     <p className="leading-relaxed mb-3">{product.benefits}</p> */}
                     <div className="flex items-center flex-wrap">
                       <Link href={'/product/' + product.productName + '?product=' + product._id}>
-                        <p className="text-blue-500 inline-flex items-center md:mb-2 lg:mb-0">
-                          Learn More
-                          <svg
-                            className="w-4 h-4 ml-2"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          >
-                            <path d="M5 12h14"></path>
-                            <path d="M12 5l7 7-7 7"></path>
-                          </svg>
+                      <p className="inline-flex items-center md:mb-2 lg:mb-0">
+                      <span style={{ color: "darkblue", fontWeight: "bold" }}>Pack Starts @</span>&nbsp;
+                      <span style={{ color: "darkgreen", fontWeight: "bolder", fontSize: "1.1em" }}>${product.price[0].cost}</span>
+                            <svg
+                                className="w-4 h-4 ml-2"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                fill="none"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            >
+                                <path d="M5 12h14"></path>
+                                <path d="M12 5l7 7-7 7"></path>
+                            </svg>
                         </p>
+
                       </Link>
                       {/* <span className="text-gray-400 mr-3 inline-flex items-center lg:ml-auto md:ml-0 ml-auto leading-none text-sm pr-3 py-1 border-r-2 border-gray-200">
                         <svg
