@@ -47,7 +47,7 @@ export default function Footer() {
               </svg>
               <span className="px-2 py-2 flex items-start flex-col leading-none">
                 <span className="text-[0.5rem] text-gray-600 mb-1">Via Call</span>
-                <span className="text-[0.6rem] font-medium">+1 7866388467</span>
+                <span className="text-[0.6rem] font-medium">+1 7866331764 || +1 7866388467</span>
               </span>
             </button>
           </div>

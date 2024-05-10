@@ -66,7 +66,7 @@ export default function Home() {
               </svg>
                 <span className="ml-4 flex items-start flex-col leading-none">
                   <span className="text-xs text-gray-600 mb-1">Contact us</span>
-                  <span className="title-font font-medium">+1 7866388467</span>
+                  <span className="title-font font-medium">+1 7866331764 || +1 7866388467</span>
                 </span>
               </button>
             </div>
