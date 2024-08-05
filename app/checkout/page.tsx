@@ -396,7 +396,7 @@ interface FormData {
                                     </div>
                                    
                         </div>
-                        <p>*Your card will be charged by the name "EUROMART"</p>
+                        <p>*Your card will be charged by the name "NUTRALIFEHEALTHCARE"</p>
                         <div className="relative pt-3 xl:pt-6">
                             <label htmlFor="note" className="block mb-3 text-sm font-semibold text-gray-500"> Notes (Optional)</label>
                             <textarea
@@ -454,7 +454,7 @@ interface FormData {
                 <span className="text-gray-600">Total</span>
                 <span className="ml-auto font-bold text-blue-600">${parseFloat(orderSummary.total).toFixed(2)}</span>
             </div>
-            <p>*Your card will be charged by the name "EUROMART" for the above amount</p>
+            <p>*Your card will be charged by the name "NUTRALIFEHEALTHCARE" for the above amount</p>
         </div>
     </div>
 )}
